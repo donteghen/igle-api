@@ -2,11 +2,10 @@ import express from "express";
 import path from "path";
 import dotenv from 'dotenv'
 import cors from 'cors'
-
-
+import { connectDb } from "./config/dbconfig";
 
 // Router import
-import { connectDb } from "./config/dbconfig";
+import { UserRouter } from "./routes/user";
 
 
 //  initial app variables and instances
@@ -22,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 
 // app.use(express.static(path.join(__dirname, '../client', 'build')))
-
+app.use(UserRouter)
 
 app.get('/api/', (req, res) => {
     res.send('welcome the autobazar api')

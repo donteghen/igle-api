@@ -6,8 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
-// Router import
 const dbconfig_1 = require("./config/dbconfig");
+// Router import
+const user_1 = require("./routes/user");
 //  initial app variables and instances
 const app = (0, express_1.default)();
 dotenv_1.default.config();
@@ -18,6 +19,7 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // app.use(express.static(path.join(__dirname, '../client', 'build')))
+app.use(user_1.UserRouter);
 app.get('/api/', (req, res) => {
     res.send('welcome the autobazar api');
 });
