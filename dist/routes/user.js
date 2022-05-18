@@ -23,6 +23,8 @@ const multer_1 = require("../helpers/multer");
 const cloudinary_1 = require("../helpers/cloudinary");
 const token_1 = require("../models/token");
 const mailer_1 = require("../helpers/mailer");
+const bcrypt_1 = require("bcrypt");
+const isStrongPassword_1 = __importDefault(require("validator/lib/isStrongPassword"));
 const UserRouter = express_1.default.Router();
 exports.UserRouter = UserRouter;
 // get User profile
@@ -115,18 +117,48 @@ UserRouter.patch('/api/user/profile/update', authentication_1.userAuth, (req, re
     }
     catch (error) {
         if (error.name === 'ValidationError') {
-            const SCHEMA_MISMATCH_ERROR = {
-                name: 'SCHEMA_MISMATCH_FAILED',
+            const VALIDATION_ERROR = {
+                name: 'VALIDATION_ERROR',
                 message: error.message
             };
-            res.status(400).send({ ok: false, error: SCHEMA_MISMATCH_ERROR });
+            res.status(400).send({ ok: false, error: VALIDATION_ERROR });
             return;
         }
         res.status(400).send({ ok: false, error });
     }
 }));
+// Change user password
+UserRouter.post('/api/user/profile/change-password', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield user_1.User.findById(req.userId);
+        if (!user) {
+            let error = new Error();
+            error = errors_1.NO_USER;
+            throw error;
+        }
+        const { newPassword, oldPassword } = req.body;
+        const isMatched = yield (0, bcrypt_1.compare)(oldPassword, user.password);
+        if (!isMatched) {
+            let error = new Error();
+            error = errors_1.OLD_PASSWORD_IS_INCORRECT;
+            throw error;
+        }
+        if (!(0, isStrongPassword_1.default)(newPassword, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 })) {
+            let error = new Error();
+            error = errors_1.NEW_PASSWORD_IS_INVALID;
+            throw error;
+        }
+        user.password = newPassword;
+        yield user.save();
+        res.send({ ok: true });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).send({ ok: false, error });
+    }
+}));
 // reset password endpoint
-UserRouter.post('/api/users/resetpassword', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+UserRouter.post('/api/users/reset-password', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield user_1.User.findOne({ email: req.body.email });
         if (!user) {
@@ -140,8 +172,8 @@ UserRouter.post('/api/users/resetpassword', (req, res) => __awaiter(void 0, void
             createdAt: Date.now()
         });
         const newToken = yield generatedToken.save();
-        const link = `${process.env.CLIENT_URL}/confirm-user-password/?user=${user.email}&token=${newToken.secret}&createdAt=${newToken.createdAt}`;
-        const success = (0, mailer_1.mailer)(user.email, 'User Password Reset', 'Follow the link below to complete your password reset operation. <strong>This operation has an active life cycle 1 hour!</strong>', 'click to continue', link);
+        const link = `${process.env.CLIENT_URL}/confirm-user-password?user=${user.email}&token=${newToken.secret}&createdAt=${newToken.createdAt}`;
+        const success = (0, mailer_1.mailer)(user.email, 'User Password Reset', 'You have requested to reset your password', 'A unique link to reset your password has been generated for you. To reset your password, click the following link and follow the instructions. <strong>This operation has an active life cycle 1 hour!</strong>', link, 'click to continue');
         res.send({ ok: true });
     }
     catch (error) {
@@ -184,6 +216,23 @@ UserRouter.post('/api/users/confirmresetpassword/', (req, res) => __awaiter(void
         res.status(400).send({ ok: false, error });
     }
 }));
+// update project plan by user
+// UserRouter.patch('/api/projects/:id/user-update-project-plan', userAuth, async (req:Request, res:Response) => {
+//     try {
+//         const project = await Project.findOne({id: req.params.id, owner: req.userId})
+//         if (!project) {
+//             let error:IError = new Error()
+//             error = NOT_FOUND
+//             throw error
+//         }
+//         project.plan = req.body.plan
+//         await project.save()
+//         res.send({ok:true})
+//     } catch (error) {
+//         console.log(error)
+//         res.status(400).send({ok:false, error})
+//     }
+// })
 // User login endpoint
 UserRouter.post('/api/users/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -192,7 +241,7 @@ UserRouter.post('/api/users/login', (req, res) => __awaiter(void 0, void 0, void
         res.send({ ok: true, data: { token: newSessionToken, user } });
     }
     catch (error) {
-        console.log(error);
+        // console.log(error)
         res.status(400).send({ ok: false, error });
     }
 }));
@@ -219,7 +268,7 @@ UserRouter.get('/api/users', authentication_1.userAuth, authentication_1.adminAu
         res.send({ ok: false, error });
     }
 }));
-// get user by id admin restricted router endpoint
+// get a single user by id admin
 UserRouter.get('/api/users/:id', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield user_1.User.findById(req.params.id);
@@ -234,7 +283,7 @@ UserRouter.get('/api/users/:id', authentication_1.userAuth, authentication_1.adm
         res.status(400).send({ ok: false, error });
     }
 }));
-// User deletion endpoint
+// User deletion by admin
 UserRouter.delete('/api/users/:id', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const deletedUser = yield user_1.User.findByIdAndDelete(req.params.id);

@@ -20,5 +20,5 @@ const TokenSchema = new Schema<TokenDocument>({
   toObject: { virtuals: true }
 })
 TokenSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 })
-const Token = model<TokenDocument>('Token', TokenSchema)
+const Token = model<TokenDocument>('Tokens', TokenSchema)
 export {Token}

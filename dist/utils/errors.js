@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AUTH_FAILED = exports.ACCOUNT_UNAPPROVED = exports.RESET_TOKEN_DEACTIVED = exports.PASSWORD_INCORRECT = exports.LOGIN_FAILED = exports.INVALID_RESET_TOKEN = exports.WRONG_RESET_TOKEN_TYPE = exports.DELETE_OPERATION_FAILED = exports.SAVE_OPERATION_FAILED = exports.TOKEN_GENERATION_FAILED = exports.NO_ADMIN = exports.NO_USER = exports.NO_TOKEN = exports.NOT_FOUND = void 0;
+exports.AUTH_FAILED = exports.ACCOUNT_UNAPPROVED = exports.RESET_TOKEN_DEACTIVED = exports.PASSWORD_INCORRECT = exports.LOGIN_FAILED = exports.INVALID_RESET_TOKEN = exports.WRONG_RESET_TOKEN_TYPE = exports.DELETE_OPERATION_FAILED = exports.SAVE_OPERATION_FAILED = exports.TOKEN_GENERATION_FAILED = exports.NEW_PASSWORD_IS_INVALID = exports.OLD_PASSWORD_IS_INCORRECT = exports.NO_ADMIN = exports.NO_USER = exports.NO_TOKEN = exports.NOT_FOUND = void 0;
 exports.NOT_FOUND = {
     name: 'NOT_FOUND',
     message: 'Not found! Please again later'
@@ -16,6 +16,14 @@ exports.NO_USER = {
 exports.NO_ADMIN = {
     name: 'NO_ADMIN_FOUND',
     message: 'No admin found with provided information!'
+};
+exports.OLD_PASSWORD_IS_INCORRECT = {
+    name: 'OLD_PASSWORD_IS_INCORRECT',
+    message: 'Your old password is incorrect!'
+};
+exports.NEW_PASSWORD_IS_INVALID = {
+    name: 'NEW_PASSWORD_IS_INVALID',
+    message: 'Your new password is invalid!'
 };
 exports.TOKEN_GENERATION_FAILED = {
     name: 'TOKEN_GENERATION_FAILED',

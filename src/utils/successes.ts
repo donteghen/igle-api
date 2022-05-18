@@ -13,3 +13,7 @@ export const PASSWORD_RESET_SUCCESSFUL: ISuccessMessage ={
     ok: true,
     message: 'Password was successfully reset'
 }
+export const PASSWORD_CHANGE_SUCCESSFUL: ISuccessMessage ={
+    ok: true,
+    message: 'Password was successfully change'
+}

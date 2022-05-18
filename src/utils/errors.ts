@@ -17,7 +17,15 @@ export const NO_ADMIN: IError = {
     name: 'NO_ADMIN_FOUND',
     message: 'No admin found with provided information!'
 }
+export const OLD_PASSWORD_IS_INCORRECT: IError = {
+    name: 'OLD_PASSWORD_IS_INCORRECT',
+    message: 'Your old password is incorrect!'
+}
 
+export const NEW_PASSWORD_IS_INVALID: IError = {
+    name: 'NEW_PASSWORD_IS_INVALID',
+    message: 'Your new password is invalid!'
+}
 
 export const TOKEN_GENERATION_FAILED: IError = {
     name: 'TOKEN_GENERATION_FAILED',

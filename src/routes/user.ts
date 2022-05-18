@@ -2,13 +2,16 @@ import express, {Request, Response} from 'express'
 import { v4 as uuidv4, validate as uuidv4Validate }   from 'uuid';
 import { User } from '../models/user'
 import { userAuth, adminAuth } from '../middleware/authentication'
-import { TOKEN_GENERATION_FAILED, RESET_TOKEN_DEACTIVED,SAVE_OPERATION_FAILED, DELETE_OPERATION_FAILED, NO_USER, WRONG_RESET_TOKEN_TYPE, INVALID_RESET_TOKEN } from '../utils/errors'
+import { TOKEN_GENERATION_FAILED, RESET_TOKEN_DEACTIVED,SAVE_OPERATION_FAILED, DELETE_OPERATION_FAILED, NO_USER, WRONG_RESET_TOKEN_TYPE, INVALID_RESET_TOKEN, PASSWORD_INCORRECT, NEW_PASSWORD_IS_INVALID, OLD_PASSWORD_IS_INCORRECT, NOT_FOUND } from '../utils/errors'
 import { DELETED_SUCCESSFULLY, PASSWORD_RESET_SUCCESSFUL } from '../utils/successes'
 import { multerUpload } from '../helpers/multer';
 import { cloudinary } from '../helpers/cloudinary';
 import { Token } from '../models/token';
 import { mailer } from '../helpers/mailer';
 import { IError } from '../models/interfaces';
+import { compare } from 'bcrypt';
+import isStrongPassword from 'validator/lib/isStrongPassword'
+import { Project } from '../models/project';
 
 const UserRouter = express.Router()
 
@@ -105,19 +108,50 @@ UserRouter.patch('/api/user/profile/update', userAuth, async (req: Request, res:
         res.send({ok:true, data:updatedUser})
     } catch (error) {
         if (error.name === 'ValidationError') {
-            const SCHEMA_MISMATCH_ERROR: IError = {
-                name: 'SCHEMA_MISMATCH_FAILED',
+            const VALIDATION_ERROR: IError = {
+                name: 'VALIDATION_ERROR',
                 message: error.message
             }
-            res.status(400).send({ok:false, error:SCHEMA_MISMATCH_ERROR})
+            res.status(400).send({ok:false, error:VALIDATION_ERROR})
             return
         }
         res.status(400).send({ok:false, error})
     }
 })
 
+// Change user password
+UserRouter.post('/api/user/profile/change-password', userAuth, async (req: Request, res: Response) => {
+    try {
+        const user = await User.findById(req.userId)
+        if (!user) {
+            let error = new Error()
+            error = NO_USER
+            throw error
+        }
+        const {newPassword, oldPassword} = req.body
+        const isMatched = await compare(oldPassword, user.password);
+
+        if (!isMatched){
+            let error: IError = new Error()
+            error = OLD_PASSWORD_IS_INCORRECT
+            throw error
+        }
+        if (!isStrongPassword(newPassword, {minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1})) {
+            let error: IError = new Error()
+            error = NEW_PASSWORD_IS_INVALID
+            throw error
+        }
+        user.password = newPassword
+        await user.save()
+        res.send({ok:true})
+    } catch (error) {
+        console.log(error)
+        res.status(400).send({ok:false, error})
+    }
+})
+
 // reset password endpoint
-UserRouter.post('/api/users/resetpassword',  async (req: Request, res: Response) => {
+UserRouter.post('/api/users/reset-password',  async (req: Request, res: Response) => {
     try {
         const user = await User.findOne({email:req.body.email})
     if (!user) {
@@ -130,9 +164,9 @@ UserRouter.post('/api/users/resetpassword',  async (req: Request, res: Response)
         secret: uuidv4(),
         createdAt: Date.now()
     })
-     const newToken = await generatedToken.save()
-    const link = `${process.env.CLIENT_URL}/confirm-user-password/?user=${user.email}&token=${newToken.secret}&createdAt=${newToken.createdAt}`
-    const success = mailer(user.email, 'User Password Reset', 'Follow the link below to complete your password reset operation. <strong>This operation has an active life cycle 1 hour!</strong>', 'click to continue', link)
+    const newToken = await generatedToken.save()
+    const link = `${process.env.CLIENT_URL}/confirm-user-password?user=${user.email}&token=${newToken.secret}&createdAt=${newToken.createdAt}`
+    const success = mailer(user.email, 'User Password Reset', 'You have requested to reset your password', 'A unique link to reset your password has been generated for you. To reset your password, click the following link and follow the instructions. <strong>This operation has an active life cycle 1 hour!</strong>', link, 'click to continue', )
 
     res.send({ok:true})
     } catch (error) {
@@ -180,6 +214,25 @@ UserRouter.post('/api/users/confirmresetpassword/', async (req: Request, res: Re
     }
 })
 
+// update project plan by user
+// UserRouter.patch('/api/projects/:id/user-update-project-plan', userAuth, async (req:Request, res:Response) => {
+//     try {
+
+//         const project = await Project.findOne({id: req.params.id, owner: req.userId})
+//         if (!project) {
+//             let error:IError = new Error()
+//             error = NOT_FOUND
+//             throw error
+//         }
+//         project.plan = req.body.plan
+//         await project.save()
+//         res.send({ok:true})
+//     } catch (error) {
+//         console.log(error)
+//         res.status(400).send({ok:false, error})
+//     }
+// })
+
 // User login endpoint
 UserRouter.post('/api/users/login', async (req:Request, res: Response) => {
     try {
@@ -188,7 +241,7 @@ UserRouter.post('/api/users/login', async (req:Request, res: Response) => {
 
         res.send({ok: true, data:{token: newSessionToken, user}})
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         res.status(400).send({ok:false, error})
     }
 })
@@ -219,7 +272,7 @@ UserRouter.get('/api/users', userAuth, adminAuth, async (req: Request, res: Resp
 })
 
 
-// get user by id admin restricted router endpoint
+// get a single user by id admin
 UserRouter.get('/api/users/:id', userAuth, adminAuth, async (req: Request, res: Response) => {
     try {
         const user = await User.findById(req.params.id)
@@ -235,7 +288,7 @@ UserRouter.get('/api/users/:id', userAuth, adminAuth, async (req: Request, res: 
 })
 
 
-// User deletion endpoint
+// User deletion by admin
 UserRouter.delete('/api/users/:id', userAuth, adminAuth, async(req: Request, res: Response) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);

@@ -21,6 +21,6 @@ const TokenSchema = new mongoose_1.Schema({
     toObject: { virtuals: true }
 });
 TokenSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 });
-const Token = (0, mongoose_1.model)('Token', TokenSchema);
+const Token = (0, mongoose_1.model)('Tokens', TokenSchema);
 exports.Token = Token;
 //# sourceMappingURL=token.js.map
