@@ -6,6 +6,7 @@ import { connectDb } from "./config/dbconfig";
 
 // Router import
 import { UserRouter } from "./routes/user";
+import { ProjectRouter } from "./routes/project";
 
 
 //  initial app variables and instances
@@ -22,6 +23,7 @@ app.use(express.urlencoded({extended:true}))
 
 // app.use(express.static(path.join(__dirname, '../client', 'build')))
 app.use(UserRouter)
+app.use(ProjectRouter)
 
 app.get('/api/', (req, res) => {
     res.send('welcome the autobazar api')

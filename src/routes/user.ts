@@ -176,7 +176,7 @@ UserRouter.post('/api/users/reset-password',  async (req: Request, res: Response
 
 })
 
-UserRouter.post('/api/users/confirmresetpassword/', async (req: Request, res: Response) => {
+UserRouter.post('/api/users/confirm-reset-password/', async (req: Request, res: Response) => {
     try {
         const {email, password, token} = req.body
         if (!uuidv4Validate(token)) {

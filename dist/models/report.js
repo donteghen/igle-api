@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Report = void 0;
+exports.ProjectReport = void 0;
 const mongoose_1 = require("mongoose");
 const ReportSchema = new mongoose_1.Schema({
     project: {
@@ -31,6 +31,6 @@ const ReportSchema = new mongoose_1.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
-const Report = (0, mongoose_1.model)('Reports', ReportSchema);
-exports.Report = Report;
+const ProjectReport = (0, mongoose_1.model)('Reports', ReportSchema);
+exports.ProjectReport = ProjectReport;
 //# sourceMappingURL=report.js.map

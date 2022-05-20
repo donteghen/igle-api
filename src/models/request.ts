@@ -31,6 +31,6 @@ const RequestSchema = new Schema<RequestDocument>({
     toObject: { virtuals: true }
 })
 
-const Request = model<RequestDocument>('Requests', RequestSchema)
+const ProjectRequest = model<RequestDocument>('Requests', RequestSchema)
 
-export {Request}
+export {ProjectRequest}

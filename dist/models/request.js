@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Request = void 0;
+exports.ProjectRequest = void 0;
 const mongoose_1 = require("mongoose");
 const RequestSchema = new mongoose_1.Schema({
     sender: {
@@ -31,6 +31,6 @@ const RequestSchema = new mongoose_1.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
-const Request = (0, mongoose_1.model)('Requests', RequestSchema);
-exports.Request = Request;
+const ProjectRequest = (0, mongoose_1.model)('Requests', RequestSchema);
+exports.ProjectRequest = ProjectRequest;
 //# sourceMappingURL=request.js.map

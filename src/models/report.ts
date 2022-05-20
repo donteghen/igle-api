@@ -32,6 +32,6 @@ const ReportSchema = new Schema<ReportDocument>({
     toObject: { virtuals: true }
 })
 
-const Report = model<ReportDocument>('Reports', ReportSchema)
+const ProjectReport = model<ReportDocument>('Reports', ReportSchema)
 
-export {Report}
+export {ProjectReport}

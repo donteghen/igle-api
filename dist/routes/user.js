@@ -181,7 +181,7 @@ UserRouter.post('/api/users/reset-password', (req, res) => __awaiter(void 0, voi
         res.status(400).send({ ok: false, error });
     }
 }));
-UserRouter.post('/api/users/confirmresetpassword/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+UserRouter.post('/api/users/confirm-reset-password/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password, token } = req.body;
         if (!(0, uuid_1.validate)(token)) {
