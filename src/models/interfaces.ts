@@ -33,7 +33,8 @@ export interface ProjectDocument extends Document {
     status: string,
     plan: string,
     detail: string,
-    description:string
+    description:string,
+    active: boolean
 }
 
 
@@ -41,7 +42,8 @@ export interface ReportDocument extends Document {
     project: PopulatedDoc<ProjectDocument & Document>,
     file: IFile,
     overview: string,
-    alert_dispatch: boolean
+    alert_dispatch: boolean,
+    date:number
 }
 
 export interface RequestDocument extends Document {
@@ -57,6 +59,7 @@ export interface ContactDocument extends Document {
     subject:string,
     createdAt:number,
     message:string,
+    phone_number:string,
     replied:boolean
 }
 

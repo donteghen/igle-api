@@ -4,12 +4,14 @@ import { ReportDocument } from "./interfaces";
 const ReportSchema = new Schema<ReportDocument>({
     project: {
         type: Schema.Types.ObjectId,
+        ref: 'Project',
         required: true,
     },
 
     file:{
         file_type: {
             type: String,
+            enum:['IMAGES', 'VIDEO', '360VR'],
             required: true
         },
         file_content: {
@@ -25,6 +27,10 @@ const ReportSchema = new Schema<ReportDocument>({
         type: Boolean,
         required: true,
         default: false
+    },
+    date: {
+        type: Number,
+        required:true,
     }
 }, {
     timestamps:true,
@@ -32,6 +38,6 @@ const ReportSchema = new Schema<ReportDocument>({
     toObject: { virtuals: true }
 })
 
-const ProjectReport = model<ReportDocument>('Reports', ReportSchema)
+const ProjectReport = model<ReportDocument>('Report', ReportSchema)
 
 export {ProjectReport}

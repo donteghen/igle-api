@@ -35,6 +35,10 @@ const ContactSchema = new mongoose_1.Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    phone_number: {
+        type: String,
+        required: true
     }
 }, {
     timestamps: true,

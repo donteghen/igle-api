@@ -77,7 +77,6 @@ const mailerHtml = (heading, detail, link, linkText) => `
 </body>
 
 </html>
-
 `;
 exports.mailerHtml = mailerHtml;
 //# sourceMappingURL=mailer-html.js.map

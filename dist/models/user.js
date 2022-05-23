@@ -122,6 +122,6 @@ UserSchema.methods.toJSON = function () {
     delete userObject.tokens;
     return userObject;
 };
-const User = (0, mongoose_1.model)('Users', UserSchema);
+const User = (0, mongoose_1.model)('User', UserSchema);
 exports.User = User;
 //# sourceMappingURL=user.js.map

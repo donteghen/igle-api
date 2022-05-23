@@ -10,6 +10,9 @@ const dbconfig_1 = require("./config/dbconfig");
 // Router import
 const user_1 = require("./routes/user");
 const project_1 = require("./routes/project");
+const request_1 = require("./routes/request");
+const contact_1 = require("./routes/contact");
+const report_1 = require("./routes/report");
 //  initial app variables and instances
 const app = (0, express_1.default)();
 dotenv_1.default.config();
@@ -22,6 +25,9 @@ app.use(express_1.default.urlencoded({ extended: true }));
 // app.use(express.static(path.join(__dirname, '../client', 'build')))
 app.use(user_1.UserRouter);
 app.use(project_1.ProjectRouter);
+app.use(request_1.RequestRouter);
+app.use(contact_1.ContactRouter);
+app.use(report_1.ReportRouter);
 app.get('/api/', (req, res) => {
     res.send('welcome the autobazar api');
 });

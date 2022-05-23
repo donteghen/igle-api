@@ -121,6 +121,6 @@ UserSchema.methods.toJSON = function(){
     delete userObject.tokens;
     return userObject;
 }
-const User: UserModel = model<IUser, UserModel>('Users', UserSchema)
+const User: UserModel = model<IUser, UserModel>('User', UserSchema)
 
 export {User, IUser, UserModel}

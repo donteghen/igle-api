@@ -39,15 +39,41 @@ ProjectRouter.post('/api/projects', userAuth, async (req:Request, res:Response) 
              res.status(400).send({ok: false, error:VALIDATION_ERROR})
              return
          }
-         res.status(400).send({ok:false, error})
+         res.status(400).send({ok:false, error:error?.message})
      }
+})
+
+// Get all projects created by the curent user
+ProjectRouter.get('/api/user/profile/projects', userAuth, async(req: Request, res: Response) => {
+    try {
+        const projects = await Project.find({owner:req.userId});
+        res.send({ok:true, data:projects})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+// Get a single project created by the curent user
+ProjectRouter.get('/api/user/profile/projects/:id', userAuth, async(req: Request, res: Response) => {
+    try {
+        const project = await Project.findOne({_id:req.params.id, owner:req.userId});
+        if (!project) {
+            let error: IError = new Error()
+            error = NOT_FOUND
+            throw error
+        }
+
+        res.send({ok:true, data:project})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
 })
 
 
 // delete project by user
-ProjectRouter.delete('/api/projects/:id', async(req: Request, res: Response) => {
+ProjectRouter.delete('/api/projects/:id', userAuth, async(req: Request, res: Response) => {
     try {
-        const deletedProject = await Project.findByIdAndDelete(req.params.id);
+        const deletedProject = await Project.findOneAndDelete({id:req.params.id, owner: req.userId});
         if (!deletedProject) {
             let error = new Error();
             error = DELETE_OPERATION_FAILED
@@ -60,19 +86,155 @@ ProjectRouter.delete('/api/projects/:id', async(req: Request, res: Response) => 
 
         res.send({ok:true, data:DELETED_SUCCESSFULLY})
     } catch (error) {
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+// Update project user
+ProjectRouter.patch('/api/user/profile/projects/:id/update', userAuth, async(req: Request, res: Response) => {
+    try {
+        const project = await Project.findOne({_id:req.params.id, owner:req.userId})
+        if (!project) {
+            let error: IError = new Error()
+            error = NOT_FOUND
+            throw error
+        }
+
+        const {name, detail, description} = req.body
+        project.name = name ? name : project.name
+        project.detail = detail ? detail : project.detail
+        project.description = description ? description : project.description
+
+        const updatedProject = await project.save()
+
+        res.send({ok:true, data:updatedProject})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+// upgrade plan for a project by user
+ProjectRouter.patch('/api/user/profile/projects/:id/upgrade-plan', userAuth, async(req: Request, res: Response) => {
+    try {
+        const project = await Project.findById(req.params.id)
+        if (!project) {
+            let error: IError = new Error()
+            error = NOT_FOUND
+            throw error
+        }
+        project.plan = req.body.plan ? req.body.plan : project.plan
+        const updatedProject = await project.save()
+
+        res.send({ok:true, data:updatedProject})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
 //////////////////////////////////////////////////////////////////////////////////////
 
+
+
 // Get all projects by Admin
 ProjectRouter.get('/api/projects', userAuth, adminAuth, async(req: Request, res: Response) => {
     try {
-        const projects = await Project.find();
+        const {email } = req.query
+        let projects = await Project.find().populate('owner').exec()
+        if (email) {
+            projects = projects.filter(proj => proj.owner.email === email)
+        }
+
         res.send({ok:true, data:projects})
     } catch (error) {
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+// Get a single projects by Admin
+ProjectRouter.get('/api/projects/:id', userAuth, adminAuth, async(req: Request, res: Response) => {
+    try {
+        const project = await Project.findById(req.params.id).populate('owner').exec()
+        if (!project) {
+            let error: IError = new Error()
+            error = NOT_FOUND
+            throw error
+        }
+        res.send({ok:true, data:project})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+// upgrade plan for a project by Admin
+ProjectRouter.patch('/api/projects/:id/upgrade-plan', userAuth, adminAuth, async(req: Request, res: Response) => {
+    try {
+        const project = await Project.findById(req.params.id)
+        if (!project) {
+            let error: IError = new Error()
+            error = NOT_FOUND
+            throw error
+        }
+        project.plan = req.body.plan ? req.body.plan : project.plan
+        const updatedProject = await project.save()
+
+        res.send({ok:true, data:updatedProject})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+// change status for a project by Admin
+ProjectRouter.patch('/api/projects/:id/status-change', userAuth, adminAuth, async(req: Request, res: Response) => {
+    try {
+        const project = await Project.findById(req.params.id)
+        if (!project) {
+            let error: IError = new Error()
+            error = NOT_FOUND
+            throw error
+        }
+        project.status = req.body.status ? req.body.status : project.status
+        const updatedProject = await project.save()
+
+        res.send({ok:true, data:updatedProject})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+
+// activate project after receieving payments project by Admin
+ProjectRouter.patch('/api/projects/:id/activate', userAuth, adminAuth, async(req: Request, res: Response) => {
+    try {
+        const project = await Project.findById(req.params.id)
+        if (!project) {
+            let error: IError = new Error()
+            error = NOT_FOUND
+            throw error
+        }
+        project.active = true
+        const updatedProject = await project.save()
+
+        res.send({ok:true, data:updatedProject})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+// de-activate project if payment is not made project by Admin
+ProjectRouter.patch('/api/projects/:id/deactivate', userAuth, adminAuth, async(req: Request, res: Response) => {
+    try {
+        const project = await Project.findById(req.params.id)
+        if (!project) {
+            let error: IError = new Error()
+            error = NOT_FOUND
+            throw error
+        }
+        project.active = false
+        const updatedProject = await project.save()
+
+        res.send({ok:true, data:updatedProject})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 

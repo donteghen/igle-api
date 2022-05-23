@@ -31,6 +31,10 @@ const ContactSchema = new Schema<ContactDocument>({
         type: Boolean,
         required: true,
         default:false
+    },
+    phone_number: {
+        type: String,
+        required: true
     }
 }, {
     timestamps:true,

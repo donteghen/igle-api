@@ -7,7 +7,9 @@ import { connectDb } from "./config/dbconfig";
 // Router import
 import { UserRouter } from "./routes/user";
 import { ProjectRouter } from "./routes/project";
-
+import { RequestRouter } from "./routes/request";
+import { ContactRouter } from "./routes/contact";
+import { ReportRouter } from "./routes/report";
 
 //  initial app variables and instances
 const app = express();
@@ -24,6 +26,9 @@ app.use(express.urlencoded({extended:true}))
 // app.use(express.static(path.join(__dirname, '../client', 'build')))
 app.use(UserRouter)
 app.use(ProjectRouter)
+app.use(RequestRouter)
+app.use(ContactRouter)
+app.use(ReportRouter)
 
 app.get('/api/', (req, res) => {
     res.send('welcome the autobazar api')

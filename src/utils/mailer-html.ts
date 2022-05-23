@@ -74,5 +74,4 @@ export const mailerHtml = ( heading: string, detail: string, link?: string, link
 </body>
 
 </html>
-
 `

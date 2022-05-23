@@ -5,16 +5,18 @@ const mongoose_1 = require("mongoose");
 const RequestSchema = new mongoose_1.Schema({
     sender: {
         type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
     },
     project: {
         type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'Project',
         required: true,
     },
     request_type: {
         type: String,
         required: true,
-        enum: ['360VR', 'PLAN UPGRADE', 'UPDATED REPORT']
+        enum: ['360VR', 'PLAN UPGRADE', 'UPDATED REPORT', 'OTHER']
     },
     detail: {
         type: String,
@@ -31,6 +33,6 @@ const RequestSchema = new mongoose_1.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
-const ProjectRequest = (0, mongoose_1.model)('Requests', RequestSchema);
+const ProjectRequest = (0, mongoose_1.model)('Request', RequestSchema);
 exports.ProjectRequest = ProjectRequest;
 //# sourceMappingURL=request.js.map

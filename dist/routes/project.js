@@ -51,13 +51,38 @@ ProjectRouter.post('/api/projects', authentication_1.userAuth, (req, res) => __a
             res.status(400).send({ ok: false, error: VALIDATION_ERROR });
             return;
         }
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// Get all projects created by the curent user
+ProjectRouter.get('/api/user/profile/projects', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const projects = yield project_1.Project.find({ owner: req.userId });
+        res.send({ ok: true, data: projects });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// Get a single project created by the curent user
+ProjectRouter.get('/api/user/profile/projects/:id', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = yield project_1.Project.findOne({ _id: req.params.id, owner: req.userId });
+        if (!project) {
+            let error = new Error();
+            error = errors_1.NOT_FOUND;
+            throw error;
+        }
+        res.send({ ok: true, data: project });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // delete project by user
-ProjectRouter.delete('/api/projects/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+ProjectRouter.delete('/api/projects/:id', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const deletedProject = yield project_1.Project.findByIdAndDelete(req.params.id);
+        const deletedProject = yield project_1.Project.findOneAndDelete({ id: req.params.id, owner: req.userId });
         if (!deletedProject) {
             let error = new Error();
             error = errors_1.DELETE_OPERATION_FAILED;
@@ -70,18 +95,142 @@ ProjectRouter.delete('/api/projects/:id', (req, res) => __awaiter(void 0, void 0
         res.send({ ok: true, data: successes_1.DELETED_SUCCESSFULLY });
     }
     catch (error) {
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// Update project user
+ProjectRouter.patch('/api/user/profile/projects/:id/update', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = yield project_1.Project.findOne({ _id: req.params.id, owner: req.userId });
+        if (!project) {
+            let error = new Error();
+            error = errors_1.NOT_FOUND;
+            throw error;
+        }
+        const { name, detail, description } = req.body;
+        project.name = name ? name : project.name;
+        project.detail = detail ? detail : project.detail;
+        project.description = description ? description : project.description;
+        const updatedProject = yield project.save();
+        res.send({ ok: true, data: updatedProject });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// upgrade plan for a project by user
+ProjectRouter.patch('/api/user/profile/projects/:id/upgrade-plan', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = yield project_1.Project.findById(req.params.id);
+        if (!project) {
+            let error = new Error();
+            error = errors_1.NOT_FOUND;
+            throw error;
+        }
+        project.plan = req.body.plan ? req.body.plan : project.plan;
+        const updatedProject = yield project.save();
+        res.send({ ok: true, data: updatedProject });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 //////////////////////////////////////////////////////////////////////////////////////
 // Get all projects by Admin
 ProjectRouter.get('/api/projects', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const projects = yield project_1.Project.find();
+        const { email } = req.query;
+        let projects = yield project_1.Project.find().populate('owner').exec();
+        if (email) {
+            projects = projects.filter(proj => proj.owner.email === email);
+        }
         res.send({ ok: true, data: projects });
     }
     catch (error) {
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// Get a single projects by Admin
+ProjectRouter.get('/api/projects/:id', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = yield project_1.Project.findById(req.params.id).populate('owner').exec();
+        if (!project) {
+            let error = new Error();
+            error = errors_1.NOT_FOUND;
+            throw error;
+        }
+        res.send({ ok: true, data: project });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// upgrade plan for a project by Admin
+ProjectRouter.patch('/api/projects/:id/upgrade-plan', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = yield project_1.Project.findById(req.params.id);
+        if (!project) {
+            let error = new Error();
+            error = errors_1.NOT_FOUND;
+            throw error;
+        }
+        project.plan = req.body.plan ? req.body.plan : project.plan;
+        const updatedProject = yield project.save();
+        res.send({ ok: true, data: updatedProject });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// change status for a project by Admin
+ProjectRouter.patch('/api/projects/:id/status-change', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = yield project_1.Project.findById(req.params.id);
+        if (!project) {
+            let error = new Error();
+            error = errors_1.NOT_FOUND;
+            throw error;
+        }
+        project.status = req.body.status ? req.body.status : project.status;
+        const updatedProject = yield project.save();
+        res.send({ ok: true, data: updatedProject });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// activate project after receieving payments project by Admin
+ProjectRouter.patch('/api/projects/:id/activate', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = yield project_1.Project.findById(req.params.id);
+        if (!project) {
+            let error = new Error();
+            error = errors_1.NOT_FOUND;
+            throw error;
+        }
+        project.active = true;
+        const updatedProject = yield project.save();
+        res.send({ ok: true, data: updatedProject });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// de-activate project if payment is not made project by Admin
+ProjectRouter.patch('/api/projects/:id/deactivate', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = yield project_1.Project.findById(req.params.id);
+        if (!project) {
+            let error = new Error();
+            error = errors_1.NOT_FOUND;
+            throw error;
+        }
+        project.active = false;
+        const updatedProject = yield project.save();
+        res.send({ ok: true, data: updatedProject });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 //# sourceMappingURL=project.js.map

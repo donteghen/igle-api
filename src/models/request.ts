@@ -4,16 +4,18 @@ import { RequestDocument } from "./interfaces";
 const RequestSchema = new Schema<RequestDocument>({
     sender: {
         type: Schema.Types.ObjectId,
+        ref:'User',
         required: true,
     },
     project: {
         type: Schema.Types.ObjectId,
+        ref: 'Project',
         required: true,
     },
     request_type: {
         type: String,
         required: true,
-        enum:['360VR', 'PLAN UPGRADE', 'UPDATED REPORT']
+        enum:['360VR', 'PLAN UPGRADE', 'UPDATED REPORT', 'OTHER']
     },
     detail: {
         type: String,
@@ -31,6 +33,6 @@ const RequestSchema = new Schema<RequestDocument>({
     toObject: { virtuals: true }
 })
 
-const ProjectRequest = model<RequestDocument>('Requests', RequestSchema)
+const ProjectRequest = model<RequestDocument>('Request', RequestSchema)
 
 export {ProjectRequest}

@@ -25,6 +25,7 @@ const token_1 = require("../models/token");
 const mailer_1 = require("../helpers/mailer");
 const bcrypt_1 = require("bcrypt");
 const isStrongPassword_1 = __importDefault(require("validator/lib/isStrongPassword"));
+const project_1 = require("../models/project");
 const UserRouter = express_1.default.Router();
 exports.UserRouter = UserRouter;
 // get User profile
@@ -35,7 +36,7 @@ UserRouter.get('/api/user/profile', authentication_1.userAuth, (req, res) => __a
     }
     catch (error) {
         console.log(error);
-        res.send({ ok: false, error });
+        res.send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // user registration router endpoint
@@ -71,7 +72,7 @@ UserRouter.post('/api/users/signup', (req, res) => __awaiter(void 0, void 0, voi
             res.status(400).send({ ok: false, error: VALIDATION_ERROR });
             return;
         }
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // User avatar upload
@@ -90,7 +91,7 @@ UserRouter.post('/api/user/profile/avatar', authentication_1.userAuth, multer_1.
         res.send({ ok: true, data: updatedUser });
     }
     catch (error) {
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // User update endpoint
@@ -124,7 +125,7 @@ UserRouter.patch('/api/user/profile/update', authentication_1.userAuth, (req, re
             res.status(400).send({ ok: false, error: VALIDATION_ERROR });
             return;
         }
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // Change user password
@@ -154,7 +155,7 @@ UserRouter.post('/api/user/profile/change-password', authentication_1.userAuth, 
     }
     catch (error) {
         console.log(error);
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // reset password endpoint
@@ -178,7 +179,7 @@ UserRouter.post('/api/users/reset-password', (req, res) => __awaiter(void 0, voi
     }
     catch (error) {
         console.log(error);
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 UserRouter.post('/api/users/confirm-reset-password/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -213,7 +214,7 @@ UserRouter.post('/api/users/confirm-reset-password/', (req, res) => __awaiter(vo
     }
     catch (error) {
         console.log(error);
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // update project plan by user
@@ -230,7 +231,7 @@ UserRouter.post('/api/users/confirm-reset-password/', (req, res) => __awaiter(vo
 //         res.send({ok:true})
 //     } catch (error) {
 //         console.log(error)
-//         res.status(400).send({ok:false, error})
+//         res.status(400).send({ok:false, error:error?.message})
 //     }
 // })
 // User login endpoint
@@ -242,7 +243,7 @@ UserRouter.post('/api/users/login', (req, res) => __awaiter(void 0, void 0, void
     }
     catch (error) {
         // console.log(error)
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // User Logout endpoint
@@ -254,7 +255,7 @@ UserRouter.post('/api/users/logout', authentication_1.userAuth, (req, res) => __
         res.send({ ok: true });
     }
     catch (error) {
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 /********************************* Admin Restricted ******************************************** */
@@ -265,7 +266,7 @@ UserRouter.get('/api/users', authentication_1.userAuth, authentication_1.adminAu
         res.send({ ok: true, data: users });
     }
     catch (error) {
-        res.send({ ok: false, error });
+        res.send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // get a single user by id admin
@@ -280,7 +281,7 @@ UserRouter.get('/api/users/:id', authentication_1.userAuth, authentication_1.adm
         res.send({ ok: true, data: user });
     }
     catch (error) {
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 // User deletion by admin
@@ -295,10 +296,11 @@ UserRouter.delete('/api/users/:id', authentication_1.userAuth, authentication_1.
         if (deletedUser.avatar && deletedUser.avatarDeleteId) {
             yield cloudinary_1.cloudinary.v2.uploader.destroy(deletedUser.avatarDeleteId);
         }
+        yield project_1.Project.deleteMany({ owner: deletedUser.id });
         res.send({ ok: true, data: successes_1.DELETED_SUCCESSFULLY });
     }
     catch (error) {
-        res.status(400).send({ ok: false, error });
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
 //# sourceMappingURL=user.js.map

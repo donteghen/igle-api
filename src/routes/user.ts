@@ -23,7 +23,7 @@ UserRouter.get('/api/user/profile', userAuth, async (req: Request, res: Response
         res.send({ok:true, data: user})
     } catch (error) {
         console.log(error)
-        res.send({ok:false, error})
+        res.send({ok:false, error:error?.message})
     }
 })
 
@@ -59,7 +59,7 @@ UserRouter.post('/api/users/signup', async (req: Request, res: Response) => {
             res.status(400).send({ok: false, error:VALIDATION_ERROR})
             return
         }
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
@@ -80,7 +80,7 @@ UserRouter.post('/api/user/profile/avatar', userAuth, multerUpload.single('avata
         const updatedUser = await user.save()
         res.send({ok:true, data:updatedUser})
     } catch (error) {
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
@@ -115,7 +115,7 @@ UserRouter.patch('/api/user/profile/update', userAuth, async (req: Request, res:
             res.status(400).send({ok:false, error:VALIDATION_ERROR})
             return
         }
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
@@ -146,7 +146,7 @@ UserRouter.post('/api/user/profile/change-password', userAuth, async (req: Reque
         res.send({ok:true})
     } catch (error) {
         console.log(error)
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
@@ -171,7 +171,7 @@ UserRouter.post('/api/users/reset-password',  async (req: Request, res: Response
     res.send({ok:true})
     } catch (error) {
         console.log(error)
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 
 })
@@ -210,7 +210,7 @@ UserRouter.post('/api/users/confirm-reset-password/', async (req: Request, res: 
         res.send({ok:true, data: PASSWORD_RESET_SUCCESSFUL})
     } catch (error) {
         console.log(error)
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
@@ -229,7 +229,7 @@ UserRouter.post('/api/users/confirm-reset-password/', async (req: Request, res: 
 //         res.send({ok:true})
 //     } catch (error) {
 //         console.log(error)
-//         res.status(400).send({ok:false, error})
+//         res.status(400).send({ok:false, error:error?.message})
 //     }
 // })
 
@@ -242,7 +242,7 @@ UserRouter.post('/api/users/login', async (req:Request, res: Response) => {
         res.send({ok: true, data:{token: newSessionToken, user}})
     } catch (error) {
         // console.log(error)
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
@@ -254,7 +254,7 @@ UserRouter.post('/api/users/logout', userAuth, async (req:Request, res:Response)
         await user.save()
         res.send({ok:true})
     } catch (error) {
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
@@ -267,7 +267,7 @@ UserRouter.get('/api/users', userAuth, adminAuth, async (req: Request, res: Resp
         const users = await User.find()
         res.send({ok:true, data:users})
     } catch (error) {
-        res.send({ok:false, error})
+        res.send({ok:false, error:error?.message})
     }
 })
 
@@ -283,7 +283,7 @@ UserRouter.get('/api/users/:id', userAuth, adminAuth, async (req: Request, res: 
         }
         res.send({ok:true, data:user})
     } catch (error) {
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 
@@ -300,9 +300,10 @@ UserRouter.delete('/api/users/:id', userAuth, adminAuth, async(req: Request, res
         if (deletedUser.avatar && deletedUser.avatarDeleteId) {
             await cloudinary.v2.uploader.destroy(deletedUser.avatarDeleteId)
         }
+        await Project.deleteMany({owner:deletedUser.id})
         res.send({ok:true, data:DELETED_SUCCESSFULLY})
     } catch (error) {
-        res.status(400).send({ok:false, error})
+        res.status(400).send({ok:false, error:error?.message})
     }
 })
 export {UserRouter}
