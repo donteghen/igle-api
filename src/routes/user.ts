@@ -1,7 +1,7 @@
 import express, {Request, Response} from 'express'
 import { v4 as uuidv4, validate as uuidv4Validate }   from 'uuid';
 import { User } from '../models/user'
-import { userAuth, adminAuth } from '../middleware/authentication'
+import { userAuth, adminAuth, userVerified } from '../middleware/authentication'
 import { TOKEN_GENERATION_FAILED, RESET_TOKEN_DEACTIVED,SAVE_OPERATION_FAILED, DELETE_OPERATION_FAILED, NO_USER, WRONG_RESET_TOKEN_TYPE, INVALID_RESET_TOKEN, PASSWORD_INCORRECT, NEW_PASSWORD_IS_INVALID, OLD_PASSWORD_IS_INCORRECT, NOT_FOUND } from '../utils/errors'
 import { DELETED_SUCCESSFULLY, PASSWORD_RESET_SUCCESSFUL } from '../utils/successes'
 import { multerUpload } from '../helpers/multer';
@@ -12,6 +12,7 @@ import { IError } from '../models/interfaces';
 import { compare } from 'bcrypt';
 import isStrongPassword from 'validator/lib/isStrongPassword'
 import { Project } from '../models/project';
+import { notifyAccountVerified, verifyAccountTemplate, welcomeTemplate, notifyAccountCreated } from '../utils/constants/email-template';
 
 const UserRouter = express.Router()
 
@@ -49,6 +50,17 @@ UserRouter.post('/api/users/signup', async (req: Request, res: Response) => {
            error = TOKEN_GENERATION_FAILED
            throw error
        }
+       // Send an account verification email to new user
+       const link = `${process.env.CLIENT_URL}/api/users/${user.id}/verify`
+       const success = await mailer(user.email, verifyAccountTemplate.subject, verifyAccountTemplate.heading,
+           verifyAccountTemplate.detail, link, verifyAccountTemplate.linkText )
+
+       // Send a notifucation email to the admin
+       const _link = `${process.env.CLIENT_URL}`
+       const adminEmail = process.env.ADMIN_EMAIL
+       const _success = await mailer(adminEmail, notifyAccountCreated.subject, notifyAccountCreated.heading,
+            notifyAccountCreated.detail, link, notifyAccountCreated.linkText )
+
        res.status(201).send({ok:true, data:{user, generatedToken}})
     } catch (error) {
         if (error.name === 'ValidationError') {
@@ -63,8 +75,42 @@ UserRouter.post('/api/users/signup', async (req: Request, res: Response) => {
     }
 })
 
+// Verify newly created account
+UserRouter.patch('/api/users/:id/verify', async (req: Request, res: Response) => {
+    try {
+        const user = await User.findById(req.params.id)
+        if (!user) {
+            let error = new Error()
+            error = NO_USER
+            throw error
+        }
+        user.isVerified = true
+       const updatedUser = await user.save()
+        if (!updatedUser) {
+            let error: IError = new Error()
+            error = SAVE_OPERATION_FAILED
+            throw error
+        }
+        // Send a welcome email to the verified user
+        const link = `${process.env.CLIENT_URL}`
+        const success = await mailer(updatedUser.email, welcomeTemplate.subject, welcomeTemplate.heading,
+            welcomeTemplate.detail, link, welcomeTemplate.linkText )
+
+        // Send a notification email to the admin
+
+        const _link = `${process.env.CLIENT_URL}`
+        const adminEmail = process.env.ADMIN_EMAIL
+        const _success = await mailer(adminEmail, notifyAccountVerified.subject, notifyAccountVerified.heading,
+             notifyAccountVerified.detail, _link, notifyAccountVerified.linkText )
+
+        res.send({ok:true})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
 // User avatar upload
-UserRouter.post('/api/user/profile/avatar', userAuth, multerUpload.single('avatar'), async (req: Request, res: Response) => {
+UserRouter.post('/api/user/profile/avatar', userAuth, userVerified, multerUpload.single('avatar'), async (req: Request, res: Response) => {
     try {
         const user = await User.findById(req.userId)
         if(user.avatar){
@@ -85,7 +131,7 @@ UserRouter.post('/api/user/profile/avatar', userAuth, multerUpload.single('avata
 })
 
 // User update endpoint
-UserRouter.patch('/api/user/profile/update', userAuth, async (req: Request, res: Response) => {
+UserRouter.patch('/api/user/profile/update', userAuth, userVerified, async (req: Request, res: Response) => {
     try {
         const user = await User.findById(req.userId)
         if (!user) {
@@ -120,7 +166,7 @@ UserRouter.patch('/api/user/profile/update', userAuth, async (req: Request, res:
 })
 
 // Change user password
-UserRouter.post('/api/user/profile/change-password', userAuth, async (req: Request, res: Response) => {
+UserRouter.post('/api/user/profile/change-password', userAuth, userVerified, async (req: Request, res: Response) => {
     try {
         const user = await User.findById(req.userId)
         if (!user) {

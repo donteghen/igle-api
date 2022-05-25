@@ -16,7 +16,9 @@ exports.ContactRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const authentication_1 = require("../middleware/authentication");
 const errors_1 = require("../utils/errors");
+const mailer_1 = require("../helpers/mailer");
 const contact_1 = require("../models/contact");
+const email_template_1 = require("../utils/constants/email-template");
 const ContactRouter = express_1.default.Router();
 exports.ContactRouter = ContactRouter;
 function filterSetter(key, value) {
@@ -44,6 +46,10 @@ ContactRouter.post('/api/contacts', (req, res) => __awaiter(void 0, void 0, void
             error = errors_1.SAVE_OPERATION_FAILED;
             throw error;
         }
+        // Notify admin of new contact message
+        const link = `${process.env.CLIENT_URL}`;
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const _success = yield (0, mailer_1.mailer)(adminEmail, email_template_1.notifyNewContactMessage.subject, email_template_1.notifyNewContactMessage.heading, email_template_1.notifyNewContactMessage.detail, link, email_template_1.notifyNewContactMessage.linkText);
         res.status(201).send({ ok: true, data: contact });
     }
     catch (error) {

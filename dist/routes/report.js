@@ -19,6 +19,7 @@ const errors_1 = require("../utils/errors");
 const mailer_1 = require("../helpers/mailer");
 const project_1 = require("../models/project");
 const report_1 = require("../models/report");
+const email_template_1 = require("../utils/constants/email-template");
 const ReportRouter = express_1.default.Router();
 exports.ReportRouter = ReportRouter;
 function filterSetter(key, value) {
@@ -34,7 +35,7 @@ function filterSetter(key, value) {
     }
 }
 // Get all a project's Reports by project owner(user)
-ReportRouter.get('/api/user/profile/projects/:id/reports', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+ReportRouter.get('/api/user/profile/projects/:id/reports', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const activeProject = yield project_1.Project.findOne({ _id: req.params.id, owner: req.userId });
         if (!activeProject) {
@@ -50,7 +51,7 @@ ReportRouter.get('/api/user/profile/projects/:id/reports', authentication_1.user
     }
 }));
 // Get a single project Report by project owner(user)
-ReportRouter.get('/api/user/profile/projects/:projectId/reports/:reportId', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+ReportRouter.get('/api/user/profile/projects/:projectId/reports/:reportId', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { projectId, reportId } = req.params;
         const activeProject = yield project_1.Project.findOne({ _id: projectId, owner: req.userId });
@@ -117,10 +118,13 @@ ReportRouter.post('/api/reports/:id', authentication_1.userAuth, authentication_
             error = errors_1.NOT_FOUND;
             throw error;
         }
-        const { email } = report.project.owner;
+        report.alert_dispatch = true;
+        const updatedReport = yield report.save();
+        // notify the project owner when a new report is uploaded
+        const { owner, name, id } = report.project;
+        const { subject, heading, detail, linkText } = (0, email_template_1.notifyReportDisptached)(owner.name, name, id);
         const link = process.env.CLIENT_URL + '/dashboard';
-        const success = yield (0, mailer_1.mailer)(email, 'Project Report Update', 'Your Latest Report Is Ready', 'As per your project plan or in respond to an on-demand report, a new report has been created and upload to your dashboard. <strong>Click on the button below to go to your dahsboard</strong>', link, 'Go to Dashboard');
-        console.log(success);
+        const success = yield (0, mailer_1.mailer)(owner.email, subject, heading, detail, link, linkText);
         res.send({ ok: true });
     }
     catch (error) {
@@ -139,7 +143,7 @@ ReportRouter.get('/api/reports', authentication_1.userAuth, authentication_1.adm
                 }
             });
         }
-        const projectReports = yield report_1.ProjectReport.find(filter).populate('project').exec();
+        const projectReports = yield report_1.ProjectReport.find(filter).populate({ path: 'project', populate: { path: 'owner' } }).exec();
         res.send({ ok: true, data: projectReports });
     }
     catch (error) {

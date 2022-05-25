@@ -24,7 +24,8 @@ export interface UserDocument extends Document {
     bio?:string,
     phone_number?: string,
     tokens: string[],
-    isAdmin: boolean
+    isAdmin: boolean,
+    isVerified:boolean
 }
 
 export interface ProjectDocument extends Document {

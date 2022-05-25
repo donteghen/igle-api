@@ -18,6 +18,8 @@ const getPayloadId = function (payload: JwtPayload | string): string {
         }
     }
 }
+
+// user authentication helper function
 export const userAuth = async function (req: Request, res: Response, next:NextFunction) {
     try {
         const token = req.headers['authorization']?.replace('Bearer ', '')
@@ -40,11 +42,31 @@ export const userAuth = async function (req: Request, res: Response, next:NextFu
         req.token = token;
         next()
     } catch (error) {
-        res.status(401).send({ok:false, error})
+        res.status(401).send({ok:false, error:error.message})
     }
 
 }
 
+// user account verification helper function
+export const userVerified = async function (req: Request, res: Response, next:NextFunction) {
+    try {
+        const user = await User.findOne({_id:req.userId, tokens:req.token});
+        if (!user) {
+        let error: IError  = new Error()
+        error = AUTH_FAILED
+        throw error
+        }
+        if(!user.isVerified) {
+            throw new Error('Verify your account first!')
+        }
+        next()
+    } catch (error) {
+        res.status(401).send({ok:false, error:error.message})
+    }
+
+}
+
+// Admin authentication helper function
 export const adminAuth = async function (req: Request, res: Response, next:NextFunction) {
     try {
         const user = await User.findOne({_id:req.userId, tokens:req.token});

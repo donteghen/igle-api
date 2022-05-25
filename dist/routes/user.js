@@ -26,6 +26,7 @@ const mailer_1 = require("../helpers/mailer");
 const bcrypt_1 = require("bcrypt");
 const isStrongPassword_1 = __importDefault(require("validator/lib/isStrongPassword"));
 const project_1 = require("../models/project");
+const email_template_1 = require("../utils/constants/email-template");
 const UserRouter = express_1.default.Router();
 exports.UserRouter = UserRouter;
 // get User profile
@@ -61,6 +62,13 @@ UserRouter.post('/api/users/signup', (req, res) => __awaiter(void 0, void 0, voi
             error = errors_1.TOKEN_GENERATION_FAILED;
             throw error;
         }
+        // Send an account verification email to new user
+        const link = `${process.env.CLIENT_URL}/api/users/${user.id}/verify`;
+        const success = yield (0, mailer_1.mailer)(user.email, email_template_1.verifyAccountTemplate.subject, email_template_1.verifyAccountTemplate.heading, email_template_1.verifyAccountTemplate.detail, link, email_template_1.verifyAccountTemplate.linkText);
+        // Send a notifucation email to the admin
+        const _link = `${process.env.CLIENT_URL}`;
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const _success = yield (0, mailer_1.mailer)(adminEmail, email_template_1.notifyAccountCreated.subject, email_template_1.notifyAccountCreated.heading, email_template_1.notifyAccountCreated.detail, link, email_template_1.notifyAccountCreated.linkText);
         res.status(201).send({ ok: true, data: { user, generatedToken } });
     }
     catch (error) {
@@ -75,8 +83,37 @@ UserRouter.post('/api/users/signup', (req, res) => __awaiter(void 0, void 0, voi
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
+// Verify newly created account
+UserRouter.patch('/api/users/:id/verify', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield user_1.User.findById(req.params.id);
+        if (!user) {
+            let error = new Error();
+            error = errors_1.NO_USER;
+            throw error;
+        }
+        user.isVerified = true;
+        const updatedUser = yield user.save();
+        if (!updatedUser) {
+            let error = new Error();
+            error = errors_1.SAVE_OPERATION_FAILED;
+            throw error;
+        }
+        // Send a welcome email to the verified user
+        const link = `${process.env.CLIENT_URL}`;
+        const success = yield (0, mailer_1.mailer)(updatedUser.email, email_template_1.welcomeTemplate.subject, email_template_1.welcomeTemplate.heading, email_template_1.welcomeTemplate.detail, link, email_template_1.welcomeTemplate.linkText);
+        // Send a notification email to the admin
+        const _link = `${process.env.CLIENT_URL}`;
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const _success = yield (0, mailer_1.mailer)(adminEmail, email_template_1.notifyAccountVerified.subject, email_template_1.notifyAccountVerified.heading, email_template_1.notifyAccountVerified.detail, _link, email_template_1.notifyAccountVerified.linkText);
+        res.send({ ok: true });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
 // User avatar upload
-UserRouter.post('/api/user/profile/avatar', authentication_1.userAuth, multer_1.multerUpload.single('avatar'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+UserRouter.post('/api/user/profile/avatar', authentication_1.userAuth, authentication_1.userVerified, multer_1.multerUpload.single('avatar'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield user_1.User.findById(req.userId);
         if (user.avatar) {
@@ -95,7 +132,7 @@ UserRouter.post('/api/user/profile/avatar', authentication_1.userAuth, multer_1.
     }
 }));
 // User update endpoint
-UserRouter.patch('/api/user/profile/update', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+UserRouter.patch('/api/user/profile/update', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield user_1.User.findById(req.userId);
         if (!user) {
@@ -129,7 +166,7 @@ UserRouter.patch('/api/user/profile/update', authentication_1.userAuth, (req, re
     }
 }));
 // Change user password
-UserRouter.post('/api/user/profile/change-password', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+UserRouter.post('/api/user/profile/change-password', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield user_1.User.findById(req.userId);
         if (!user) {

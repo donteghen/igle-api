@@ -1,10 +1,11 @@
 import express, {Request, Response} from 'express'
-import { userAuth, adminAuth } from '../middleware/authentication'
+import { userAuth, adminAuth, userVerified } from '../middleware/authentication'
 import { SAVE_OPERATION_FAILED, NOT_FOUND, DELETE_OPERATION_FAILED } from '../utils/errors'
 import { mailer } from '../helpers/mailer';
 import { IError } from '../models/interfaces';
 import { Project } from '../models/project';
 import { ProjectRequest } from '../models/request';
+import { notifyNewProjectRequest, notifyProjectRequestStatusChanged } from '../utils/constants/email-template';
 
 const RequestRouter = express.Router()
 
@@ -19,9 +20,8 @@ function filterSetter (key:string, value:any) {
     }
 }
 // Create a new request
-RequestRouter.post('/api/projects/:id/requests', userAuth, async (req:Request, res:Response) => {
+RequestRouter.post('/api/projects/:id/requests', userAuth, userVerified,  async (req:Request, res:Response) => {
     try {
-        const {request_type, detail} = req.body
         const sender = req.userId
         // making sure the project belongs to the user making the request
         const activeProject = await Project.findById(req.params.id).populate('owner').exec()
@@ -31,19 +31,30 @@ RequestRouter.post('/api/projects/:id/requests', userAuth, async (req:Request, r
         if (activeProject?.owner?.id !== sender.toString()) {
             throw new Error('Error')
         }
+        if (!activeProject.active) {
+            throw new Error('This project is inactive, please contact the support team')
+        }
 
         const newRequest = new ProjectRequest({
             sender ,
             project: req.params.id ,
-            request_type ,
-            detail
+            request_type: req.body.request_type ,
+            detail: req.body.detail
         })
         const projectRequest = await newRequest.save()
         if (!projectRequest) {
             let error: IError = new Error()
             error = SAVE_OPERATION_FAILED
             throw error
-           }
+        }
+
+        // Notify the admin of the new request
+        const {owner, name, id} = activeProject
+        const {subject, heading, detail, linkText} = notifyNewProjectRequest(owner.name, name, id)
+        const link = `${process.env.CLIENT_URL}`
+        const adminEmail = process.env.ADMIN_EMAIL
+        const _success = await mailer(adminEmail, subject, heading, detail, link, linkText)
+
         res.status(201).send({ok:true, data:projectRequest})
     } catch (error) {
         if (error.name === 'ValidationError') {
@@ -59,7 +70,7 @@ RequestRouter.post('/api/projects/:id/requests', userAuth, async (req:Request, r
 })
 
 // // Get all current project's requests by the curent user
-RequestRouter.get('/api/user/profile/projects/:projectId/requests', userAuth, async(req: Request, res: Response) => {
+RequestRouter.get('/api/user/profile/projects/:projectId/requests', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
         const {projectId} = req.params
         const requests = await ProjectRequest.find({project:projectId, sender:req.userId});
@@ -70,7 +81,7 @@ RequestRouter.get('/api/user/profile/projects/:projectId/requests', userAuth, as
 })
 
 // // Get single request by the curent user for a project
-RequestRouter.get('/api/user/profile/projects/:projectId/requests/:requestId', userAuth, async(req: Request, res: Response) => {
+RequestRouter.get('/api/user/profile/projects/:projectId/requests/:requestId', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
         const {projectId, requestId} = req.params
         const projectRequest = await ProjectRequest.findOne({id:requestId, project:projectId, sender:req.userId});
@@ -125,15 +136,22 @@ RequestRouter.get('/api/requests/:id', userAuth, adminAuth, async(req: Request, 
 // Update request status
 RequestRouter.patch('/api/requests/:id/update-status', userAuth, adminAuth, async (req:Request, res:Response) => {
     try {
-        const projectRequest = await ProjectRequest.findById(req.params.id)
+        const projectRequest = await ProjectRequest.findById(req.params.id).populate({path:'project', populate:{path:'owner'}})
         if (!projectRequest) {
             let error: IError = new Error()
             error = NOT_FOUND
             throw error
         }
-        projectRequest.status = req.body.statsu ? req.body.statsu : projectRequest.status
+        projectRequest.status = req.body.status ? req.body.status : projectRequest.status
         const updateRequest = await projectRequest.save()
-        res.status(201).send({ok:true, data:updateRequest})
+
+        // Notify the project owner about the request status update
+        const {owner, name, id} = projectRequest.project
+        const {subject, heading, linkText, detail} = notifyProjectRequestStatusChanged(owner.name, name, id, updateRequest.status )
+        const _link = `${process.env.CLIENT_URL}`
+        const _success = await mailer(owner.email, subject, heading, detail, _link, linkText )
+
+        res.status(200).send({ok:true, data:updateRequest})
     } catch (error) {
         if (error.name === 'ValidationError') {
             const VALIDATION_ERROR: IError = {

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminAuth = exports.userAuth = void 0;
+exports.adminAuth = exports.userVerified = exports.userAuth = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const user_1 = require("../models/user");
 const errors_1 = require("../utils/errors");
@@ -20,6 +20,7 @@ const getPayloadId = function (payload) {
         }
     }
 };
+// user authentication helper function
 const userAuth = function (req, res, next) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -44,11 +45,33 @@ const userAuth = function (req, res, next) {
             next();
         }
         catch (error) {
-            res.status(401).send({ ok: false, error });
+            res.status(401).send({ ok: false, error: error.message });
         }
     });
 };
 exports.userAuth = userAuth;
+// user account verification helper function
+const userVerified = function (req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const user = yield user_1.User.findOne({ _id: req.userId, tokens: req.token });
+            if (!user) {
+                let error = new Error();
+                error = errors_1.AUTH_FAILED;
+                throw error;
+            }
+            if (!user.isVerified) {
+                throw new Error('Verify your account first!');
+            }
+            next();
+        }
+        catch (error) {
+            res.status(401).send({ ok: false, error: error.message });
+        }
+    });
+};
+exports.userVerified = userVerified;
+// Admin authentication helper function
 const adminAuth = function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

@@ -5,6 +5,7 @@ import { DELETED_SUCCESSFULLY} from '../utils/successes'
 import { mailer } from '../helpers/mailer';
 import { IError } from '../models/interfaces';
 import { Contact } from '../models/contact';
+import { notifyNewContactMessage } from '../utils/constants/email-template';
 
 const ContactRouter = express.Router()
 
@@ -33,7 +34,14 @@ ContactRouter.post('/api/contacts', async (req:Request, res:Response) => {
             let error: IError = new Error()
             error = SAVE_OPERATION_FAILED
             throw error
-           }
+        }
+        // Notify admin of new contact message
+        const link = `${process.env.CLIENT_URL}`
+        const adminEmail = process.env.ADMIN_EMAIL
+        const _success = await mailer(adminEmail, notifyNewContactMessage.subject,
+            notifyNewContactMessage.heading,notifyNewContactMessage.detail, link,
+            notifyNewContactMessage.linkText )
+
         res.status(201).send({ok:true, data:contact})
     } catch (error) {
         if (error.name === 'ValidationError') {

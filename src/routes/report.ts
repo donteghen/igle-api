@@ -1,11 +1,11 @@
 import express, {Request, Response} from 'express'
-import { userAuth, adminAuth } from '../middleware/authentication'
+import { userAuth, adminAuth, userVerified } from '../middleware/authentication'
 import { SAVE_OPERATION_FAILED, NOT_FOUND, DELETE_OPERATION_FAILED } from '../utils/errors'
 import { mailer } from '../helpers/mailer';
 import { IError } from '../models/interfaces';
 import { Project } from '../models/project';
 import { ProjectReport } from '../models/report';
-
+import { notifyReportDisptached } from '../utils/constants/email-template';
 const ReportRouter = express.Router()
 
 function filterSetter (key:string, value:any) {
@@ -23,7 +23,7 @@ function filterSetter (key:string, value:any) {
 
 
 // Get all a project's Reports by project owner(user)
-ReportRouter.get('/api/user/profile/projects/:id/reports', userAuth, async(req: Request, res: Response) => {
+ReportRouter.get('/api/user/profile/projects/:id/reports', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
         const activeProject = await Project.findOne({_id: req.params.id, owner:req.userId})
         if (!activeProject) {
@@ -38,7 +38,7 @@ ReportRouter.get('/api/user/profile/projects/:id/reports', userAuth, async(req: 
     }
 })
 // Get a single project Report by project owner(user)
-ReportRouter.get('/api/user/profile/projects/:projectId/reports/:reportId', userAuth, async(req: Request, res: Response) => {
+ReportRouter.get('/api/user/profile/projects/:projectId/reports/:reportId', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
         const {projectId, reportId} = req.params
         const activeProject = await Project.findOne({_id: projectId, owner:req.userId})
@@ -106,10 +106,14 @@ ReportRouter.post('/api/reports/:id', userAuth, adminAuth, async(req: Request, r
             error = NOT_FOUND
             throw error
         }
-        const {email} = report.project.owner
+        report.alert_dispatch = true
+        const updatedReport = await report.save()
+        // notify the project owner when a new report is uploaded
+        const {owner, name, id} = report.project
+        const {subject, heading, detail, linkText} = notifyReportDisptached(owner.name, name, id)
         const link = process.env.CLIENT_URL + '/dashboard'
-        const success = await mailer(email, 'Project Report Update', 'Your Latest Report Is Ready', 'As per your project plan or in respond to an on-demand report, a new report has been created and upload to your dashboard. <strong>Click on the button below to go to your dahsboard</strong>', link, 'Go to Dashboard', )
-        console.log(success)
+        const success = await mailer(owner.email, subject, heading, detail, link, linkText )
+
         res.send({ok:true})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})
@@ -128,7 +132,7 @@ ReportRouter.get('/api/reports', userAuth, adminAuth, async(req: Request, res: R
                 }
             })
         }
-        const projectReports = await ProjectReport.find(filter).populate('project').exec();
+        const projectReports = await ProjectReport.find(filter).populate({path:'project', populate:{path:'owner'}}).exec();
         res.send({ok:true, data:projectReports})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})
