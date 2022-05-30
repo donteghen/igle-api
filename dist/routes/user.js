@@ -187,8 +187,8 @@ UserRouter.post('/api/user/profile/change-password', authentication_1.userAuth, 
             throw error;
         }
         user.password = newPassword;
-        yield user.save();
-        res.send({ ok: true });
+        const updatedUser = yield user.save();
+        res.send({ ok: true, data: updatedUser });
     }
     catch (error) {
         console.log(error);
@@ -284,7 +284,7 @@ UserRouter.post('/api/users/login', (req, res) => __awaiter(void 0, void 0, void
     }
 }));
 // User Logout endpoint
-UserRouter.post('/api/users/logout', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+UserRouter.post('/api/user/profile/logout', authentication_1.userAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield user_1.User.findById(req.userId);
         user.tokens = [];

@@ -188,8 +188,8 @@ UserRouter.post('/api/user/profile/change-password', userAuth, userVerified, asy
             throw error
         }
         user.password = newPassword
-        await user.save()
-        res.send({ok:true})
+        const updatedUser = await user.save()
+        res.send({ok:true, data: updatedUser})
     } catch (error) {
         console.log(error)
         res.status(400).send({ok:false, error:error?.message})
@@ -293,7 +293,7 @@ UserRouter.post('/api/users/login', async (req:Request, res: Response) => {
 })
 
 // User Logout endpoint
-UserRouter.post('/api/users/logout', userAuth, async (req:Request, res:Response) => {
+UserRouter.post('/api/user/profile/logout', userAuth, async (req:Request, res:Response) => {
     try {
         const user = await User.findById(req.userId)
         user.tokens = [];
