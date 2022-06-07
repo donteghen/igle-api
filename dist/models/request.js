@@ -16,7 +16,7 @@ const RequestSchema = new mongoose_1.Schema({
     request_type: {
         type: String,
         required: true,
-        enum: ['360VR', 'PLAN UPGRADE', 'UPDATED REPORT', 'OTHER']
+        enum: ['360VR', 'PLAN UPGRADE', 'UPDATED REPORT', 'OTHERS']
     },
     detail: {
         type: String,

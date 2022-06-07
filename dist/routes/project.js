@@ -213,7 +213,7 @@ ProjectRouter.patch('/api/projects/:id/upgrade-plan', authentication_1.userAuth,
         const { subject, heading, linkText, detail } = (0, email_template_1.notifyProjectPlanUpgraded)(user === null || user === void 0 ? void 0 : user.name, updatedProject.name, updatedProject.id, updatedProject.plan);
         const _link = `${process.env.CLIENT_URL}`;
         const _success = yield (0, mailer_1.mailer)(user.email, subject, heading, detail, _link, linkText);
-        res.send({ ok: true, updatedProject });
+        res.send({ ok: true, data: updatedProject });
     }
     catch (error) {
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });

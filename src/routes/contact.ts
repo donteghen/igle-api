@@ -13,6 +13,10 @@ function filterSetter (key:string, value:any) {
     switch (key) {
         case 'replied':
             return {replied : value}
+        case 'email':
+            return {email : value}
+        case 'email':
+            return {name : value}
         default:
             return {}
     }
@@ -42,7 +46,7 @@ ContactRouter.post('/api/contacts', async (req:Request, res:Response) => {
             notifyNewContactMessage.heading,notifyNewContactMessage.detail, link,
             notifyNewContactMessage.linkText )
 
-        res.status(201).send({ok:true, data:contact})
+        res.status(201).send({ok:true})
     } catch (error) {
         if (error.name === 'ValidationError') {
             const VALIDATION_ERROR: IError = {

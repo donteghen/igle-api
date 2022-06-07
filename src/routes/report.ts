@@ -143,7 +143,7 @@ ReportRouter.get('/api/reports', userAuth, adminAuth, async(req: Request, res: R
 // Get all a project's Reports
 ReportRouter.get('/api/projects/:id/reports', userAuth, adminAuth, async(req: Request, res: Response) => {
     try {
-        const projectReports = await ProjectReport.find();
+        const projectReports = await ProjectReport.find({project:req.params.id});
         res.send({ok:true, data:projectReports})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})

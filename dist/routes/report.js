@@ -153,7 +153,7 @@ ReportRouter.get('/api/reports', authentication_1.userAuth, authentication_1.adm
 // Get all a project's Reports
 ReportRouter.get('/api/projects/:id/reports', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const projectReports = yield report_1.ProjectReport.find();
+        const projectReports = yield report_1.ProjectReport.find({ project: req.params.id });
         res.send({ ok: true, data: projectReports });
     }
     catch (error) {

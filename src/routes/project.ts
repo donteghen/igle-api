@@ -219,7 +219,7 @@ ProjectRouter.patch('/api/projects/:id/upgrade-plan', userAuth, adminAuth, async
         const _link = `${process.env.CLIENT_URL}`
         const _success = await mailer(user.email, subject, heading, detail, _link, linkText )
 
-        res.send({ok:true, updatedProject})
+        res.send({ok:true, data:updatedProject})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})
     }

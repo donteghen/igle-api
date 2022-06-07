@@ -25,6 +25,10 @@ function filterSetter(key, value) {
     switch (key) {
         case 'replied':
             return { replied: value };
+        case 'email':
+            return { email: value };
+        case 'email':
+            return { name: value };
         default:
             return {};
     }
@@ -50,7 +54,7 @@ ContactRouter.post('/api/contacts', (req, res) => __awaiter(void 0, void 0, void
         const link = `${process.env.CLIENT_URL}`;
         const adminEmail = process.env.ADMIN_EMAIL;
         const _success = yield (0, mailer_1.mailer)(adminEmail, email_template_1.notifyNewContactMessage.subject, email_template_1.notifyNewContactMessage.heading, email_template_1.notifyNewContactMessage.detail, link, email_template_1.notifyNewContactMessage.linkText);
-        res.status(201).send({ ok: true, data: contact });
+        res.status(201).send({ ok: true });
     }
     catch (error) {
         if (error.name === 'ValidationError') {

@@ -69,6 +69,7 @@ RequestRouter.post('/api/projects/:id/requests', authentication_1.userAuth, auth
         res.status(201).send({ ok: true, data: projectRequest });
     }
     catch (error) {
+        console.log(error);
         if (error.name === 'ValidationError') {
             const VALIDATION_ERROR = {
                 name: 'VALIDATION_ERROR',
@@ -120,7 +121,7 @@ RequestRouter.get('/api/requests', authentication_1.userAuth, authentication_1.a
                 }
             });
         }
-        const projectRequests = yield request_1.ProjectRequest.find(filter);
+        const projectRequests = yield request_1.ProjectRequest.find(filter).populate('sender').exec();
         res.send({ ok: true, data: projectRequests });
     }
     catch (error) {

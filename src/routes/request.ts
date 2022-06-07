@@ -57,6 +57,7 @@ RequestRouter.post('/api/projects/:id/requests', userAuth, userVerified,  async 
 
         res.status(201).send({ok:true, data:projectRequest})
     } catch (error) {
+        console.log(error)
         if (error.name === 'ValidationError') {
             const VALIDATION_ERROR: IError = {
                 name: 'VALIDATION_ERROR',
@@ -111,7 +112,7 @@ RequestRouter.get('/api/requests', userAuth, adminAuth, async(req: Request, res:
                 }
             })
         }
-        const projectRequests = await ProjectRequest.find(filter);
+        const projectRequests = await ProjectRequest.find(filter).populate('sender').exec();
         res.send({ok:true, data:projectRequests})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})
