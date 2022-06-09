@@ -15,6 +15,8 @@ const ProjectRouter = express.Router()
 
 function filterSetter (key:string, value:any) {
     switch (key) {
+        case 'owner':
+            return {'owner': value}
         case 'plan':
             return {'plan': value}
         case 'name':
@@ -70,7 +72,7 @@ ProjectRouter.post('/api/projects', userAuth, userVerified, async (req:Request, 
 // Get all projects created by the curent user
 ProjectRouter.get('/api/user/profile/projects', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
-        const projects = await Project.find({owner:req.userId});
+        const projects = await Project.find({owner:req.userId}).populate('owner').exec();
         res.send({ok:true, data:projects})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})
@@ -80,7 +82,7 @@ ProjectRouter.get('/api/user/profile/projects', userAuth, userVerified,  async(r
 // Get a single project created by the curent user
 ProjectRouter.get('/api/user/profile/projects/:id', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
-        const project = await Project.findOne({_id:req.params.id, owner:req.userId});
+        const project = await Project.findOne({_id:req.params.id, owner:req.userId}).populate('owner').exec();
         if (!project) {
             let error: IError = new Error()
             error = NOT_FOUND

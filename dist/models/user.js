@@ -63,6 +63,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     bio: {
         type: String,
+        default: 'No bio provided'
     },
     isAdmin: {
         type: Boolean,
