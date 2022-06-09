@@ -2,7 +2,7 @@ import {IError} from '../models/interfaces'
 
 export const NOT_FOUND: IError = {
     name:'NOT_FOUND',
-    message: 'Not found! Please again later'
+    message: 'Not found! The requested resource is available'
 }
 export const NO_TOKEN: IError = {
     name:'NO_TOKEN',

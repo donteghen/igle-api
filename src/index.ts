@@ -10,6 +10,7 @@ import { ProjectRouter } from "./routes/project";
 import { RequestRouter } from "./routes/request";
 import { ContactRouter } from "./routes/contact";
 import { ReportRouter } from "./routes/report";
+import { TestimonialRouter } from "./routes/testimonial";
 
 //  initial app variables and instances
 const app = express();
@@ -29,6 +30,7 @@ app.use(ProjectRouter)
 app.use(RequestRouter)
 app.use(ContactRouter)
 app.use(ReportRouter)
+app.use(TestimonialRouter)
 
 app.get('/api/', (req, res) => {
     res.send('welcome the autobazar api')

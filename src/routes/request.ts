@@ -100,7 +100,7 @@ RequestRouter.get('/api/user/profile/projects/:projectId/requests/:requestId', u
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-// // Get all current project's requests by the curent user
+// // Get all current project's requests
 RequestRouter.get('/api/requests', userAuth, adminAuth, async(req: Request, res: Response) => {
     try {
         let filter: any = {}
@@ -112,17 +112,17 @@ RequestRouter.get('/api/requests', userAuth, adminAuth, async(req: Request, res:
                 }
             })
         }
-        const projectRequests = await ProjectRequest.find(filter).populate('sender').exec();
+        const projectRequests = await ProjectRequest.find(filter).populate('sender').populate('project').exec();
         res.send({ok:true, data:projectRequests})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})
     }
 })
 
-// // Get single request by the curent user for a project
+// // Get single request  for a project
 RequestRouter.get('/api/requests/:id', userAuth, adminAuth, async(req: Request, res: Response) => {
     try {
-        const projectRequest = await ProjectRequest.findById(req.params.id);
+        const projectRequest = await ProjectRequest.findById(req.params.id).populate('sender').populate('project').exec();
         if (!projectRequest) {
             let error: IError = new Error()
             error = NOT_FOUND

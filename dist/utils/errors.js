@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AUTH_FAILED = exports.ACCOUNT_UNAPPROVED = exports.RESET_TOKEN_DEACTIVED = exports.PASSWORD_INCORRECT = exports.LOGIN_FAILED = exports.INVALID_RESET_TOKEN = exports.WRONG_RESET_TOKEN_TYPE = exports.DELETE_OPERATION_FAILED = exports.SAVE_OPERATION_FAILED = exports.TOKEN_GENERATION_FAILED = exports.NEW_PASSWORD_IS_INVALID = exports.OLD_PASSWORD_IS_INCORRECT = exports.NO_ADMIN = exports.NO_USER = exports.NO_TOKEN = exports.NOT_FOUND = void 0;
 exports.NOT_FOUND = {
     name: 'NOT_FOUND',
-    message: 'Not found! Please again later'
+    message: 'Not found! The requested resource is available'
 };
 exports.NO_TOKEN = {
     name: 'NO_TOKEN',

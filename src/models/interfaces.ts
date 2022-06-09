@@ -70,3 +70,10 @@ export interface TokenDocument extends Document {
     secret: string,
     createdAt: number
 }
+
+export interface TestimonialDocument extends Document {
+    author: PopulatedDoc<UserDocument & Document>,
+    rating: number,
+    comment:string,
+    show: boolean
+}

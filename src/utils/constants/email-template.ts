@@ -121,3 +121,14 @@ export const notifyProjectRequestStatusChanged = (userName:string, projectName:s
         linkText: 'Continue to Dashboard'
     }
 }
+
+////////////////////////// ------Testimonials Related ------/////////////////////////////////
+
+export const notifyNewtestimonialAdded = () => {
+    return {
+        subject: 'Testimonials Update',
+        heading: 'Latest on Testimonials',
+        detail:'Dear Admin<br/><br/>A new testimonial has been added. <strong>Please visit the dashboard to confirm</strong>',
+        linkText: 'Visit Dashboard Now'
+    }
+}

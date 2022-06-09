@@ -15,7 +15,7 @@ function filterSetter (key:string, value:any) {
             return {replied : value}
         case 'email':
             return {email : value}
-        case 'email':
+        case 'name':
             return {name : value}
         default:
             return {}

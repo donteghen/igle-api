@@ -1,7 +1,7 @@
 "use strict";
 ////////////////////////// ------User Related ------/////////////////////////////////
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.notifyProjectRequestStatusChanged = exports.notifyNewProjectRequest = exports.notifyNewContactMessage = exports.notifyReportDisptached = exports.notifyProjectDeactivated = exports.notifyProjectActivated = exports.notifyProjectStatusChange = exports.notifyProjectPlanUpgraded = exports.notifyProjectDeleted = exports.notifyProjectCreated = exports.notifyAccountVerified = exports.welcomeTemplate = exports.notifyAccountCreated = exports.verifyAccountTemplate = void 0;
+exports.notifyNewtestimonialAdded = exports.notifyProjectRequestStatusChanged = exports.notifyNewProjectRequest = exports.notifyNewContactMessage = exports.notifyReportDisptached = exports.notifyProjectDeactivated = exports.notifyProjectActivated = exports.notifyProjectStatusChange = exports.notifyProjectPlanUpgraded = exports.notifyProjectDeleted = exports.notifyProjectCreated = exports.notifyAccountVerified = exports.welcomeTemplate = exports.notifyAccountCreated = exports.verifyAccountTemplate = void 0;
 exports.verifyAccountTemplate = {
     subject: 'Account verification',
     heading: 'Account Verification',
@@ -114,4 +114,14 @@ const notifyProjectRequestStatusChanged = (userName, projectName, projectId, new
     };
 };
 exports.notifyProjectRequestStatusChanged = notifyProjectRequestStatusChanged;
+////////////////////////// ------Testimonials Related ------/////////////////////////////////
+const notifyNewtestimonialAdded = () => {
+    return {
+        subject: 'Testimonials Update',
+        heading: 'Latest on Testimonials',
+        detail: 'Dear Admin<br/><br/>A new testimonial has been added. <strong>Please visit the dashboard to confirm</strong>',
+        linkText: 'Visit Dashboard Now'
+    };
+};
+exports.notifyNewtestimonialAdded = notifyNewtestimonialAdded;
 //# sourceMappingURL=email-template.js.map

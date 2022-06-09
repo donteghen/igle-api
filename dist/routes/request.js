@@ -109,7 +109,7 @@ RequestRouter.get('/api/user/profile/projects/:projectId/requests/:requestId', a
     }
 }));
 ///////////////////////////////////////////////////////////////////////////////////
-// // Get all current project's requests by the curent user
+// // Get all current project's requests
 RequestRouter.get('/api/requests', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let filter = {};
@@ -121,17 +121,17 @@ RequestRouter.get('/api/requests', authentication_1.userAuth, authentication_1.a
                 }
             });
         }
-        const projectRequests = yield request_1.ProjectRequest.find(filter).populate('sender').exec();
+        const projectRequests = yield request_1.ProjectRequest.find(filter).populate('sender').populate('project').exec();
         res.send({ ok: true, data: projectRequests });
     }
     catch (error) {
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
-// // Get single request by the curent user for a project
+// // Get single request  for a project
 RequestRouter.get('/api/requests/:id', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const projectRequest = yield request_1.ProjectRequest.findById(req.params.id);
+        const projectRequest = yield request_1.ProjectRequest.findById(req.params.id).populate('sender').populate('project').exec();
         if (!projectRequest) {
             let error = new Error();
             error = errors_1.NOT_FOUND;
