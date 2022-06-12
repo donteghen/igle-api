@@ -80,7 +80,17 @@ ProjectRouter.post('/api/projects', authentication_1.userAuth, authentication_1.
 // Get all projects created by the curent user
 ProjectRouter.get('/api/user/profile/projects', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const projects = yield project_1.Project.find({ owner: req.userId }).populate('owner').exec();
+        let filter = {};
+        const queries = Object.keys(req.query);
+        if (queries.length > 0) {
+            queries.forEach(key => {
+                if (req.query[key]) {
+                    filter = Object.assign(filter, filterSetter(key, req.query[key]));
+                }
+            });
+        }
+        filter = Object.assign({ owner: req.userId }, filter);
+        const projects = yield project_1.Project.find(filter).populate('owner').exec();
         res.send({ ok: true, data: projects });
     }
     catch (error) {

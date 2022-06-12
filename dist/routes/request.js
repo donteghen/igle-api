@@ -26,6 +26,8 @@ function filterSetter(key, value) {
     switch (key) {
         case 'sender':
             return { sender: value };
+        case 'status':
+            return { status: value };
         case 'project':
             return { project: value };
         default:
@@ -78,6 +80,26 @@ RequestRouter.post('/api/projects/:id/requests', authentication_1.userAuth, auth
             res.status(400).send({ ok: false, error: VALIDATION_ERROR });
             return;
         }
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
+// // Get all current user's requests
+RequestRouter.get('/api/user/profile/requests', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let filter = {};
+        const queries = Object.keys(req.query);
+        if (queries.length > 0) {
+            queries.forEach(key => {
+                if (req.query[key]) {
+                    filter = Object.assign(filter, filterSetter(key, req.query[key]));
+                }
+            });
+        }
+        filter = Object.assign({ sender: req.userId }, filter);
+        const requests = yield request_1.ProjectRequest.find(filter).populate('sender').populate('project').exec();
+        res.send({ ok: true, data: requests });
+    }
+    catch (error) {
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));

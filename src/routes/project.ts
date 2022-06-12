@@ -72,7 +72,17 @@ ProjectRouter.post('/api/projects', userAuth, userVerified, async (req:Request, 
 // Get all projects created by the curent user
 ProjectRouter.get('/api/user/profile/projects', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
-        const projects = await Project.find({owner:req.userId}).populate('owner').exec();
+        let filter: any = {}
+        const queries = Object.keys(req.query)
+        if (queries.length > 0) {
+            queries.forEach(key => {
+                if (req.query[key]) {
+                    filter = Object.assign(filter, filterSetter(key, req.query[key]))
+                }
+            })
+        }
+        filter = {owner:req.userId, ...filter}
+        const projects = await Project.find(filter).populate('owner').exec();
         res.send({ok:true, data:projects})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})

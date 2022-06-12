@@ -13,6 +13,8 @@ function filterSetter (key:string, value:any) {
     switch (key) {
         case 'sender':
             return {sender : value}
+        case 'status':
+            return {status : value}
         case 'project':
             return {project: value}
         default:
@@ -70,6 +72,25 @@ RequestRouter.post('/api/projects/:id/requests', userAuth, userVerified,  async 
     }
 })
 
+// // Get all current user's requests
+RequestRouter.get('/api/user/profile/requests', userAuth, userVerified, async(req: Request, res: Response) => {
+    try {
+        let filter: any = {}
+        const queries = Object.keys(req.query)
+        if (queries.length > 0) {
+            queries.forEach(key => {
+                if (req.query[key]) {
+                    filter = Object.assign(filter, filterSetter(key, req.query[key]))
+                }
+            })
+        }
+        filter = {sender:req.userId, ...filter}
+        const requests = await ProjectRequest.find(filter).populate('sender').populate('project').exec();
+        res.send({ok:true, data:requests})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
 // // Get all current project's requests by the curent user
 RequestRouter.get('/api/user/profile/projects/:projectId/requests', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
