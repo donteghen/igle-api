@@ -63,6 +63,17 @@ const UserSchema = new Schema({
         type: String,
         default:'No bio provided'
     },
+    address: {
+        country: {
+            type: String,
+        },
+        city: {
+            type: String,
+        },
+        adress_line: {
+            type: String,
+        }
+    },
     isAdmin:{
         type: Boolean,
         required:true,

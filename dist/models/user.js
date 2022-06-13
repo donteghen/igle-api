@@ -65,6 +65,17 @@ const UserSchema = new mongoose_1.Schema({
         type: String,
         default: 'No bio provided'
     },
+    address: {
+        country: {
+            type: String,
+        },
+        city: {
+            type: String,
+        },
+        adress_line: {
+            type: String,
+        }
+    },
     isAdmin: {
         type: Boolean,
         required: true,

@@ -5,6 +5,12 @@ export interface IFile {
     file_content: string | [string]
 }
 
+export interface IAddress {
+    country: string,
+    city: string,
+    address_line: string
+}
+
 export interface ISuccessMessage {
     ok: boolean
     message: string
@@ -25,7 +31,8 @@ export interface UserDocument extends Document {
     phone_number?: string,
     tokens: string[],
     isAdmin: boolean,
-    isVerified:boolean
+    isVerified:boolean,
+    address: IAddress
 }
 
 export interface ProjectDocument extends Document {
