@@ -107,7 +107,7 @@ RequestRouter.get('/api/user/profile/requests', authentication_1.userAuth, authe
 RequestRouter.get('/api/user/profile/projects/:projectId/requests', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { projectId } = req.params;
-        const requests = yield request_1.ProjectRequest.find({ project: projectId, sender: req.userId });
+        const requests = yield request_1.ProjectRequest.find({ project: projectId, sender: req.userId }).populate('sender').populate('project').exec();
         res.send({ ok: true, data: requests });
     }
     catch (error) {

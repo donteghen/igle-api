@@ -95,7 +95,7 @@ RequestRouter.get('/api/user/profile/requests', userAuth, userVerified, async(re
 RequestRouter.get('/api/user/profile/projects/:projectId/requests', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
         const {projectId} = req.params
-        const requests = await ProjectRequest.find({project:projectId, sender:req.userId});
+        const requests = await ProjectRequest.find({project:projectId, sender:req.userId}).populate('sender').populate('project').exec();
         res.send({ok:true, data:requests})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})

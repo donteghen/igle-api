@@ -140,11 +140,12 @@ UserRouter.patch('/api/user/profile/update', authentication_1.userAuth, authenti
             error = errors_1.NO_USER;
             throw error;
         }
-        const { name, email, bio, phone_number } = req.body;
+        const { name, email, bio, phone_number, address } = req.body;
         user.name = name ? name : user.name;
         user.email = email ? email : user.email;
         user.bio = bio ? bio : user.bio;
-        user.phone_number = phone_number ? phone_number : user.phone_number;
+        user.phone_number = phone_number ? phone_number : user.phone_number,
+            user.address = address ? address : user.address;
         const updatedUser = yield user.save();
         if (!updatedUser) {
             let error = new Error();

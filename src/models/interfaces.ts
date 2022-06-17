@@ -84,3 +84,10 @@ export interface TestimonialDocument extends Document {
     comment:string,
     show: boolean
 }
+
+export interface PaymentDocument extends Document {
+    sender:string,
+    date:number,
+    method:string,
+    project: PopulatedDoc<ProjectDocument & Document>
+}
