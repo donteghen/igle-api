@@ -2,7 +2,7 @@ import express, {Request, Response} from 'express'
 import { v4 as uuidv4, validate as uuidv4Validate }   from 'uuid';
 import { User } from '../models/user'
 import { userAuth, adminAuth, userVerified } from '../middleware/authentication'
-import { TOKEN_GENERATION_FAILED, RESET_TOKEN_DEACTIVED,SAVE_OPERATION_FAILED, DELETE_OPERATION_FAILED, NO_USER, WRONG_RESET_TOKEN_TYPE, INVALID_RESET_TOKEN, PASSWORD_INCORRECT, NEW_PASSWORD_IS_INVALID, OLD_PASSWORD_IS_INCORRECT, NOT_FOUND } from '../utils/errors'
+import { TOKEN_GENERATION_FAILED, RESET_TOKEN_DEACTIVED,SAVE_OPERATION_FAILED, DELETE_OPERATION_FAILED, NO_USER, WRONG_RESET_TOKEN_TYPE, INVALID_RESET_TOKEN, EMAIL_ALREADY_EXITS, NEW_PASSWORD_IS_INVALID, OLD_PASSWORD_IS_INCORRECT} from '../utils/errors'
 import { DELETED_SUCCESSFULLY, PASSWORD_RESET_SUCCESSFUL } from '../utils/successes'
 import { multerUpload } from '../helpers/multer';
 import { cloudinary } from '../helpers/cloudinary';
@@ -13,6 +13,8 @@ import { compare } from 'bcrypt';
 import isStrongPassword from 'validator/lib/isStrongPassword'
 import { Project } from '../models/project';
 import { notifyAccountVerified, verifyAccountTemplate, welcomeTemplate, notifyAccountCreated } from '../utils/constants/email-template';
+import { ProjectRequest } from '../models/request';
+import { Testimonial } from '../models/testimonial';
 
 const UserRouter = express.Router()
 
@@ -37,6 +39,12 @@ UserRouter.post('/api/users/signup', async (req: Request, res: Response) => {
            password: req.body.password,
            phone_number:req.body.phone_number
        })
+       const userExist = await User.find({email:newUser.email})
+       if (userExist.length > 0) {
+            let error: IError = new Error()
+            error = EMAIL_ALREADY_EXITS
+            throw error
+       }
        const user = await newUser.save();
        if (!user) {
         let error: IError = new Error()
@@ -51,7 +59,7 @@ UserRouter.post('/api/users/signup', async (req: Request, res: Response) => {
            throw error
        }
        // Send an account verification email to new user
-       const link = `${process.env.CLIENT_URL}/api/users/${user.id}/verify`
+       const link = `${process.env.CLIENT_URL}/account-verification?userId=${user.id}`
        const success = await mailer(user.email, verifyAccountTemplate.subject, verifyAccountTemplate.heading,
            verifyAccountTemplate.detail, link, verifyAccountTemplate.linkText )
 
@@ -213,7 +221,7 @@ UserRouter.post('/api/users/reset-password',  async (req: Request, res: Response
         createdAt: Date.now()
     })
     const newToken = await generatedToken.save()
-    const link = `${process.env.CLIENT_URL}/confirm-user-password?user=${user.email}&token=${newToken.secret}&createdAt=${newToken.createdAt}`
+    const link = `${process.env.CLIENT_URL}/confirm-reset-password?user=${user.email}&token=${newToken.secret}&createdAt=${newToken.createdAt}`
     const success = mailer(user.email, 'User Password Reset', 'You have requested to reset your password', 'A unique link to reset your password has been generated for you. To reset your password, click the following link and follow the instructions. <strong>This operation has an active life cycle 1 hour!</strong>', link, 'click to continue', )
 
     res.send({ok:true})
@@ -246,7 +254,7 @@ UserRouter.post('/api/users/confirm-reset-password/', async (req: Request, res: 
             error = INVALID_RESET_TOKEN
             throw error
         }
-        await Token.deleteMany({owner:user.id})
+
         if (Date.now() - resetToken.createdAt > 3600000){
             let error: IError = new Error()
             error = RESET_TOKEN_DEACTIVED
@@ -255,6 +263,7 @@ UserRouter.post('/api/users/confirm-reset-password/', async (req: Request, res: 
 
         user.password = password
         await user.save()
+        await Token.deleteMany({owner:user.id})
         res.send({ok:true, data: PASSWORD_RESET_SUCCESSFUL})
     } catch (error) {
         console.log(error)
@@ -289,7 +298,6 @@ UserRouter.post('/api/users/login', async (req:Request, res: Response) => {
 
         res.send({ok: true, data:{token: newSessionToken, user}})
     } catch (error) {
-        // console.log(error)
         res.status(400).send({ok:false, error:error?.message})
     }
 })
@@ -349,6 +357,8 @@ UserRouter.delete('/api/users/:id', userAuth, adminAuth, async(req: Request, res
             await cloudinary.v2.uploader.destroy(deletedUser.avatarDeleteId)
         }
         await Project.deleteMany({owner:deletedUser.id})
+        await ProjectRequest.deleteMany({sender:deletedUser.id})
+        await Testimonial.deleteMany({author:deletedUser.id})
         res.send({ok:true, data:DELETED_SUCCESSFULLY})
     } catch (error) {
         res.status(400).send({ok:false, error:error?.message})

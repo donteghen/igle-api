@@ -41,6 +41,7 @@ const ProjectSchema = new Schema<ProjectDocument>({
     toObject: { virtuals: true }
 })
 
+
 const Project = model<ProjectDocument>('Project', ProjectSchema)
 
 export {Project}

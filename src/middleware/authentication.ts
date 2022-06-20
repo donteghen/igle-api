@@ -57,7 +57,7 @@ export const userVerified = async function (req: Request, res: Response, next:Ne
         throw error
         }
         if(!user.isVerified) {
-            throw new Error('Verify your account first!')
+            throw new Error('You account has not been verified yet! Please check your email and follow the attached link to complete the verification process.')
         }
         next()
     } catch (error) {

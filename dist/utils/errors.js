@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AUTH_FAILED = exports.ACCOUNT_UNAPPROVED = exports.RESET_TOKEN_DEACTIVED = exports.PASSWORD_INCORRECT = exports.LOGIN_FAILED = exports.INVALID_RESET_TOKEN = exports.WRONG_RESET_TOKEN_TYPE = exports.DELETE_OPERATION_FAILED = exports.SAVE_OPERATION_FAILED = exports.TOKEN_GENERATION_FAILED = exports.NEW_PASSWORD_IS_INVALID = exports.OLD_PASSWORD_IS_INCORRECT = exports.NO_ADMIN = exports.NO_USER = exports.NO_TOKEN = exports.NOT_FOUND = void 0;
+exports.EMAIL_ALREADY_EXITS = exports.AUTH_FAILED = exports.ACCOUNT_UNAPPROVED = exports.RESET_TOKEN_DEACTIVED = exports.PASSWORD_INCORRECT = exports.LOGIN_FAILED = exports.INVALID_RESET_TOKEN = exports.WRONG_RESET_TOKEN_TYPE = exports.DELETE_OPERATION_FAILED = exports.SAVE_OPERATION_FAILED = exports.TOKEN_GENERATION_FAILED = exports.NEW_PASSWORD_IS_INVALID = exports.OLD_PASSWORD_IS_INCORRECT = exports.NO_ADMIN = exports.NO_USER = exports.NO_TOKEN = exports.NOT_FOUND = void 0;
 exports.NOT_FOUND = {
     name: 'NOT_FOUND',
     message: 'Not found! The requested resource is available'
@@ -64,5 +64,9 @@ exports.ACCOUNT_UNAPPROVED = {
 exports.AUTH_FAILED = {
     name: 'AUTHENTICATION FAILED',
     message: 'You must be authenticated to access this feature'
+};
+exports.EMAIL_ALREADY_EXITS = {
+    name: 'EMAIL DUPLICATION',
+    message: 'This email already exists. Please try with a different email address.'
 };
 //# sourceMappingURL=errors.js.map

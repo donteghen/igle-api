@@ -25,6 +25,7 @@ const UserSchema = new Schema({
     email: {
         type: String,
         required: true,
+        unique:true,
         validate: {
             validator (value: string) {
                 return isEmail(value)
@@ -42,7 +43,7 @@ const UserSchema = new Schema({
                 })
             },
             message () {
-               return `password is not strong enough`
+               return `password is must have atleast 8 characters, atleast 1 uppercase character, atleast 1 lowercase character, atleast 1 digit, atleast 1 symbol`
             }
         }
     },

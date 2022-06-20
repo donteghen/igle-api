@@ -27,6 +27,7 @@ const UserSchema = new mongoose_1.Schema({
     email: {
         type: String,
         required: true,
+        unique: true,
         validate: {
             validator(value) {
                 return (0, isEmail_1.default)(value);
@@ -44,7 +45,7 @@ const UserSchema = new mongoose_1.Schema({
                 });
             },
             message() {
-                return `password is not strong enough`;
+                return `password is must have atleast 8 characters, atleast 1 uppercase character, atleast 1 lowercase character, atleast 1 digit, atleast 1 symbol`;
             }
         }
     },

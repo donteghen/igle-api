@@ -75,3 +75,7 @@ export const AUTH_FAILED: IError = {
     name: 'AUTHENTICATION FAILED',
     message: 'You must be authenticated to access this feature'
 }
+export const EMAIL_ALREADY_EXITS = {
+    name: 'EMAIL DUPLICATION',
+    message: 'This email already exists. Please try with a different email address.'
+}

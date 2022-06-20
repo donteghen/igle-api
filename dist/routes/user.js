@@ -27,6 +27,8 @@ const bcrypt_1 = require("bcrypt");
 const isStrongPassword_1 = __importDefault(require("validator/lib/isStrongPassword"));
 const project_1 = require("../models/project");
 const email_template_1 = require("../utils/constants/email-template");
+const request_1 = require("../models/request");
+const testimonial_1 = require("../models/testimonial");
 const UserRouter = express_1.default.Router();
 exports.UserRouter = UserRouter;
 // get User profile
@@ -49,6 +51,12 @@ UserRouter.post('/api/users/signup', (req, res) => __awaiter(void 0, void 0, voi
             password: req.body.password,
             phone_number: req.body.phone_number
         });
+        const userExist = yield user_1.User.find({ email: newUser.email });
+        if (userExist.length > 0) {
+            let error = new Error();
+            error = errors_1.EMAIL_ALREADY_EXITS;
+            throw error;
+        }
         const user = yield newUser.save();
         if (!user) {
             let error = new Error();
@@ -63,7 +71,7 @@ UserRouter.post('/api/users/signup', (req, res) => __awaiter(void 0, void 0, voi
             throw error;
         }
         // Send an account verification email to new user
-        const link = `${process.env.CLIENT_URL}/api/users/${user.id}/verify`;
+        const link = `${process.env.CLIENT_URL}/account-verification?userId=${user.id}`;
         const success = yield (0, mailer_1.mailer)(user.email, email_template_1.verifyAccountTemplate.subject, email_template_1.verifyAccountTemplate.heading, email_template_1.verifyAccountTemplate.detail, link, email_template_1.verifyAccountTemplate.linkText);
         // Send a notifucation email to the admin
         const _link = `${process.env.CLIENT_URL}`;
@@ -211,7 +219,7 @@ UserRouter.post('/api/users/reset-password', (req, res) => __awaiter(void 0, voi
             createdAt: Date.now()
         });
         const newToken = yield generatedToken.save();
-        const link = `${process.env.CLIENT_URL}/confirm-user-password?user=${user.email}&token=${newToken.secret}&createdAt=${newToken.createdAt}`;
+        const link = `${process.env.CLIENT_URL}/confirm-reset-password?user=${user.email}&token=${newToken.secret}&createdAt=${newToken.createdAt}`;
         const success = (0, mailer_1.mailer)(user.email, 'User Password Reset', 'You have requested to reset your password', 'A unique link to reset your password has been generated for you. To reset your password, click the following link and follow the instructions. <strong>This operation has an active life cycle 1 hour!</strong>', link, 'click to continue');
         res.send({ ok: true });
     }
@@ -240,7 +248,6 @@ UserRouter.post('/api/users/confirm-reset-password/', (req, res) => __awaiter(vo
             error = errors_1.INVALID_RESET_TOKEN;
             throw error;
         }
-        yield token_1.Token.deleteMany({ owner: user.id });
         if (Date.now() - resetToken.createdAt > 3600000) {
             let error = new Error();
             error = errors_1.RESET_TOKEN_DEACTIVED;
@@ -248,6 +255,7 @@ UserRouter.post('/api/users/confirm-reset-password/', (req, res) => __awaiter(vo
         }
         user.password = password;
         yield user.save();
+        yield token_1.Token.deleteMany({ owner: user.id });
         res.send({ ok: true, data: successes_1.PASSWORD_RESET_SUCCESSFUL });
     }
     catch (error) {
@@ -280,7 +288,6 @@ UserRouter.post('/api/users/login', (req, res) => __awaiter(void 0, void 0, void
         res.send({ ok: true, data: { token: newSessionToken, user } });
     }
     catch (error) {
-        // console.log(error)
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
@@ -335,6 +342,8 @@ UserRouter.delete('/api/users/:id', authentication_1.userAuth, authentication_1.
             yield cloudinary_1.cloudinary.v2.uploader.destroy(deletedUser.avatarDeleteId);
         }
         yield project_1.Project.deleteMany({ owner: deletedUser.id });
+        yield request_1.ProjectRequest.deleteMany({ sender: deletedUser.id });
+        yield testimonial_1.Testimonial.deleteMany({ author: deletedUser.id });
         res.send({ ok: true, data: successes_1.DELETED_SUCCESSFULLY });
     }
     catch (error) {
