@@ -31,7 +31,7 @@ TestimonialRouter.post('/api/testimonials', userAuth, userVerified,  async (req:
             let error: IError = new Error()
             error = {
                 name:'ALLREADY_HAS_TESTIMONIAL',
-                message: 'You already have a testimonial! Please contact support for help'
+                message: 'You already submitted a testimonial! For any changes please contact support'
             }
             throw error
         }
@@ -114,7 +114,7 @@ TestimonialRouter.patch('/api/testimonials/:id/show', userAuth, adminAuth, async
             error = NOT_FOUND
             throw error
         }
-        testimonial.show = true
+        testimonial.show = !testimonial.show
         const updatedTestimonial = await testimonial.save()
 
         res.status(200).send({ok:true, data: updatedTestimonial})

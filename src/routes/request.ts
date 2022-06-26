@@ -188,8 +188,9 @@ RequestRouter.patch('/api/requests/:id/update-status', userAuth, adminAuth, asyn
 })
 
 // Delete a projects request by Id
-RequestRouter.delete('/api/requests/:id', userAuth, adminAuth, async(req: Request, res: Response) => {
+RequestRouter.delete('/api/requests/:id/delete', userAuth, adminAuth, async(req: Request, res: Response) => {
     try {
+
         const deletedRequest = await ProjectRequest.findByIdAndDelete(req.params.id);
         if (!deletedRequest) {
             let error: IError = new Error()
@@ -198,6 +199,7 @@ RequestRouter.delete('/api/requests/:id', userAuth, adminAuth, async(req: Reques
         }
         res.send({ok:true})
     } catch (error) {
+
         res.status(400).send({ok:false, error:error?.message})
     }
 })

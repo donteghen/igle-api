@@ -15,7 +15,7 @@ const ContactSchema = new Schema<ContactDocument>({
                 return isEmail(value)
             },
             message () {
-               return `email validation failed!`
+               return `The provided email is invalid!`
             }
         }
     },

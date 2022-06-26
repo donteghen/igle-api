@@ -128,6 +128,7 @@ ReportRouter.post('/api/reports/:id', authentication_1.userAuth, authentication_
         res.send({ ok: true });
     }
     catch (error) {
+        console.log(error);
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));

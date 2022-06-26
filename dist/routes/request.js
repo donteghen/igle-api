@@ -196,7 +196,7 @@ RequestRouter.patch('/api/requests/:id/update-status', authentication_1.userAuth
     }
 }));
 // Delete a projects request by Id
-RequestRouter.delete('/api/requests/:id', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+RequestRouter.delete('/api/requests/:id/delete', authentication_1.userAuth, authentication_1.adminAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const deletedRequest = yield request_1.ProjectRequest.findByIdAndDelete(req.params.id);
         if (!deletedRequest) {

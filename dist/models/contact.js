@@ -19,7 +19,7 @@ const ContactSchema = new mongoose_1.Schema({
                 return (0, isEmail_1.default)(value);
             },
             message() {
-                return `email validation failed!`;
+                return `The provided email is invalid!`;
             }
         }
     },

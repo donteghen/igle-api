@@ -127,4 +127,16 @@ ContactRouter.delete('/api/contacts/:id', userAuth, adminAuth, async (req:Reques
         res.status(400).send({ok:false, error:error?.message})
     }
 })
+// Delete Contact Message
+ContactRouter.delete('/api/delete-contacts', async (req:Request, res:Response) => {
+    try {
+        const count = await Contact.deleteMany()
+        console.log(count)
+        res.send({ok: true})
+    } catch (error) {
+        res.status(400).send({ok:false, error:error?.message})
+    }
+})
+
+
 export {ContactRouter}

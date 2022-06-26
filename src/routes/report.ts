@@ -60,6 +60,7 @@ ReportRouter.get('/api/user/profile/projects/:projectId/reports/:reportId', user
 ReportRouter.post('/api/projects/:id/reports', userAuth, adminAuth, async (req:Request, res:Response) => {
     try {
         const {file_type, file_content, overview } = req.body
+
         // making sure the project belongs to the user making the request
         const activeProject = await Project.findById(req.params.id).populate('owner').exec()
         if (!activeProject) {
@@ -116,6 +117,7 @@ ReportRouter.post('/api/reports/:id', userAuth, adminAuth, async(req: Request, r
 
         res.send({ok:true})
     } catch (error) {
+        console.log(error)
         res.status(400).send({ok:false, error:error?.message})
     }
 })

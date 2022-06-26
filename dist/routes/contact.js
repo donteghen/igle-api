@@ -135,4 +135,15 @@ ContactRouter.delete('/api/contacts/:id', authentication_1.userAuth, authenticat
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));
+// Delete Contact Message
+ContactRouter.delete('/api/delete-contacts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const count = yield contact_1.Contact.deleteMany();
+        console.log(count);
+        res.send({ ok: true });
+    }
+    catch (error) {
+        res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
+    }
+}));
 //# sourceMappingURL=contact.js.map
