@@ -5,8 +5,15 @@ export interface IFile {
     file_content: string | [string]
 }
 
+
 export interface IAddress {
     country: string,
+    city: string,
+    address_line: string
+}
+
+export interface ILocation {
+    region: string,
     city: string,
     address_line: string
 }
@@ -42,7 +49,8 @@ export interface ProjectDocument extends Document {
     plan: string,
     detail: string,
     description:string,
-    active: boolean
+    active: boolean,
+    location: ILocation
 }
 
 

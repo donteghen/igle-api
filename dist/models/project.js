@@ -35,6 +35,20 @@ const ProjectSchema = new mongoose_1.Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    location: {
+        region: {
+            type: String,
+            required: true
+        },
+        city: {
+            type: String,
+            required: true
+        },
+        address_line: {
+            type: String,
+            required: true
+        }
     }
 }, {
     timestamps: true,

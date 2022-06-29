@@ -44,14 +44,15 @@ function filterSetter(key, value) {
 // create new project
 ProjectRouter.post('/api/projects', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, plan, detail, description } = req.body;
+        const { name, plan, detail, description, location } = req.body;
         const owner = req.userId;
         const newProject = new project_1.Project({
             name,
             owner,
             plan,
             detail,
-            description
+            description,
+            location
         });
         const project = yield newProject.save();
         if (!project) {
@@ -71,7 +72,7 @@ ProjectRouter.post('/api/projects', authentication_1.userAuth, authentication_1.
                 name: 'VALIDATION_ERROR',
                 message: error.message
             };
-            res.status(400).send({ ok: false, error: VALIDATION_ERROR });
+            res.status(400).send({ ok: false, error: VALIDATION_ERROR.message });
             return;
         }
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });

@@ -33,14 +33,15 @@ function filterSetter (key:string, value:any) {
 ProjectRouter.post('/api/projects', userAuth, userVerified, async (req:Request, res:Response) => {
 
     try {
-        const {name, plan, detail, description} = req.body
+        const {name, plan, detail, description, location} = req.body
         const owner = req.userId
         const newProject = new Project({
             name,
             owner,
             plan,
             detail,
-            description
+            description,
+            location
         })
         const project = await newProject.save();
         if (!project) {
@@ -48,7 +49,6 @@ ProjectRouter.post('/api/projects', userAuth, userVerified, async (req:Request, 
          error = SAVE_OPERATION_FAILED
          throw error
         }
-
         // Send a notifucation email to the admin
         const link = `${process.env.CLIENT_URL}`
         const adminEmail = process.env.ADMIN_EMAIL
@@ -62,7 +62,7 @@ ProjectRouter.post('/api/projects', userAuth, userVerified, async (req:Request, 
                  name: 'VALIDATION_ERROR',
                  message: error.message
              }
-             res.status(400).send({ok: false, error:VALIDATION_ERROR})
+             res.status(400).send({ok: false, error:VALIDATION_ERROR.message})
              return
          }
          res.status(400).send({ok:false, error:error?.message})

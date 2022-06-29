@@ -11,7 +11,7 @@ const ReportSchema = new mongoose_1.Schema({
     file: {
         file_type: {
             type: String,
-            enum: ['IMAGES', 'VIDEO', '360VR'],
+            enum: ['IMAGES', 'VIDEO', '360VR', 'WEBCAM'],
             required: true
         },
         file_content: {
