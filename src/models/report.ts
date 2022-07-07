@@ -11,7 +11,7 @@ const ReportSchema = new Schema<ReportDocument>({
     file:{
         file_type: {
             type: String,
-            enum:['IMAGES', 'VIDEO', '360VR', 'WEBCAM'],
+            enum:['IMAGES', 'VIDEO', '360VR', 'WEBCAM', 'OTHERS'],
             required: true
         },
         file_content: {
