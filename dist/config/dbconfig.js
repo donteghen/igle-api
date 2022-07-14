@@ -13,7 +13,7 @@ exports.connectDb = void 0;
 const mongoose_1 = require("mongoose");
 const connectDb = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, mongoose_1.connect)(process.env.MONGO_STRING)
-        .then(() => console.log('Db is connected'))
+        .then(() => console.log('Db is connected and server is ready'))
         .catch(error => console.log(error));
 });
 exports.connectDb = connectDb;
