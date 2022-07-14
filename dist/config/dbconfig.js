@@ -8,14 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectDb = void 0;
-const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = require("mongoose");
-dotenv_1.default.config();
 const connectDb = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, mongoose_1.connect)(process.env.MONGO_STRING)
         .then(() => console.log('Db is connected'))
