@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import dotenv from 'dotenv'
+// import dotenv from 'dotenv'
 import cors from 'cors'
 import { connectDb } from "./config/dbconfig";
 
@@ -14,7 +14,7 @@ import { TestimonialRouter } from "./routes/testimonial";
 
 //  initial app variables and instances
 const app = express();
-dotenv.config()
+// dotenv.config()
 connectDb()
 const port = process.env.PORT || 8080;
 
