@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.cloudinary = void 0;
 const cloudinary_1 = __importDefault(require("cloudinary"));
 exports.cloudinary = cloudinary_1.default;
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
 cloudinary_1.default.v2.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.API_KEY,

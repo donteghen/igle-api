@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-// import dotenv from 'dotenv'
+const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const dbconfig_1 = require("./config/dbconfig");
 // Router import
@@ -16,7 +16,7 @@ const report_1 = require("./routes/report");
 const testimonial_1 = require("./routes/testimonial");
 //  initial app variables and instances
 const app = (0, express_1.default)();
-// dotenv.config()
+dotenv_1.default.config();
 (0, dbconfig_1.connectDb)();
 const port = process.env.PORT || 8080;
 // define the express app middleware
