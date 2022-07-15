@@ -1,0 +1,12 @@
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:15.549Z","msg":"Using New Relic for Node.js. Agent version: 8.15.0; Node version: v14.17.0."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:15.779Z","msg":"Using LegacyContextManager"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:15.943Z","msg":"The newrelic module must be the first module required.\nThe following modules were required before newrelic and are not being instrumented:\n\texpress: /Users/donaldteghen/Desktop/api/igle/node_modules/express/index.js\n\tq: /Users/donaldteghen/Desktop/api/igle/node_modules/qs/lib/index.js"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:15.946Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:17.648Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:17.649Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:25.912Z","msg":"Agent state changed from connecting to connected."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:25.913Z","msg":"Connected to collector-010.newrelic.com:443 with agent run ID BfeRNji4CTojADZCg0akm4Bi0QpYAAgBAAAnIQEAACCsAgRGpKOXAwAGOC4xNS4wAAtEb25hbGRzLUFpcgAEaWdsZQ.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:25.913Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/3555971/applications/1185194903","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:25.914Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":83}}"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:25.921Z","msg":"Agent state changed from connected to started."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Donalds-Air","pid":8364,"time":"2022-07-15T06:32:26.921Z","msg":"Starting initial 1000ms harvest."}

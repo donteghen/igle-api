@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+require('newrelic');
 const dbconfig_1 = require("./config/dbconfig");
 // Router import
 const user_1 = require("./routes/user");

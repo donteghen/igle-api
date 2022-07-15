@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import dotenv from 'dotenv'
 import cors from 'cors'
+require('newrelic')
 import { connectDb } from "./config/dbconfig";
 
 // Router import
