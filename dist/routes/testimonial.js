@@ -21,16 +21,32 @@ const testimonial_1 = require("../models/testimonial");
 const email_template_1 = require("../utils/constants/email-template");
 const TestimonialRouter = express_1.default.Router();
 exports.TestimonialRouter = TestimonialRouter;
+function toBoolean(stringValue) {
+    if (stringValue === 'true') {
+        return true;
+    }
+    else if (stringValue === 'false') {
+        return false;
+    }
+    else {
+        return undefined;
+    }
+}
 function filterSetter(key, value) {
+    let formattedValue;
     switch (key) {
         case 'author':
-            return { author: value };
+            formattedValue = String(value);
+            return { author: formattedValue };
         case 'min-rating':
-            return { rating: { $gte: value } };
+            formattedValue = Number.parseInt(value, 10);
+            return { rating: { $gte: formattedValue } };
         case 'max-rating':
-            return { rating: { $lte: value } };
+            formattedValue = Number.parseInt(value, 10);
+            return { rating: { $lte: formattedValue } };
         case 'show':
-            return { show: value };
+            formattedValue = toBoolean(value);
+            return { show: formattedValue };
         default:
             return {};
     }

@@ -20,7 +20,7 @@ const ProjectSchema = new Schema<ProjectDocument>({
     plan:{
         type: String,
         required: true,
-        enum: ['STANDARD', 'PRO', 'ENTERPRISE']
+        enum: ['360VRWT', 'PHOTO', 'VIDEO', 'WEBCAM']
     },
     detail: {
         type: String,

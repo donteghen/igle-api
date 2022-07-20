@@ -21,7 +21,7 @@ const ProjectSchema = new mongoose_1.Schema({
     plan: {
         type: String,
         required: true,
-        enum: ['STANDARD', 'PRO', 'ENTERPRISE']
+        enum: ['360VRWT', 'PHOTO', 'VIDEO', 'WEBCAM']
     },
     detail: {
         type: String,

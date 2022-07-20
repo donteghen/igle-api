@@ -8,16 +8,33 @@ import { notifyNewtestimonialAdded } from '../utils/constants/email-template';
 
 const TestimonialRouter = express.Router()
 
+function toBoolean (stringValue: string) : boolean | undefined {
+    if (stringValue === 'true') {
+        return true
+    }
+    else if (stringValue === 'false') {
+        return false
+    }
+    else {
+        return undefined
+    }
+}
 function filterSetter (key:string, value:any) {
+
+    let formattedValue: number | string | boolean
     switch (key) {
         case 'author':
-            return {author : value}
+            formattedValue = String(value)
+            return {author : formattedValue}
         case 'min-rating':
-            return {rating: {$gte: value}}
+            formattedValue = Number.parseInt(value, 10)
+            return {rating: {$gte: formattedValue}}
         case 'max-rating':
-            return {rating: {$lte: value}}
+            formattedValue = Number.parseInt(value, 10)
+            return {rating: {$lte: formattedValue}}
         case 'show':
-            return {show: value}
+            formattedValue = toBoolean(value)
+            return {show: formattedValue}
         default:
             return {}
     }
