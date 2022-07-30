@@ -132,3 +132,23 @@ export const notifyNewtestimonialAdded = () => {
         linkText: 'Visit Dashboard Now'
     }
 }
+
+/////////////////////////// ------Testimonials Related ------/////////////////////////////////
+
+export const confirmPaymentReceived = (userName:string, projectName: string, projectPlan:string, ) => {
+    return {
+        subject: 'Project Plan Payment Confirmation',
+        heading: 'Project Plan Payment Updates',
+        detail:`Dear ${userName}<br/><br/> Thanks for your recent payment.<br/><br/>This is to confirm that your payment for the project: <strong>${projectName}</strong>, on <strong>${projectPlan} Plan</strong> has been successfully received and processed.<br/><strong>Please visit profile setting's payment page for details, thanks!</strong>.`,
+        linkText: 'Visit Your Profile Now'
+    }
+}
+
+export const confirmPaymentRefund = (userName:string, projectName: string, projectPlan:string, ) => {
+    return {
+        subject: 'Project Plan Payment Refund Confirmation',
+        heading: 'Project Plan Payment Refund Updates',
+        detail:`Dear ${userName}<br/><br/>This is to confirm that your recent payment made for the project: <strong>${projectName}</strong>, on <strong>${projectPlan} Plan</strong> has been successfully refunded.<br/><strong>Please visit profile setting's payment page for details or contact the support team if there are any issues with the refund thanks!</strong>.`,
+        linkText: 'Visit Your Profile Now'
+    }
+}

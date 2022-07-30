@@ -21,6 +21,7 @@ const testimonial_1 = require("../models/testimonial");
 const email_template_1 = require("../utils/constants/email-template");
 const TestimonialRouter = express_1.default.Router();
 exports.TestimonialRouter = TestimonialRouter;
+// casting a string to boolean
 function toBoolean(stringValue) {
     if (stringValue === 'true') {
         return true;
@@ -32,6 +33,7 @@ function toBoolean(stringValue) {
         return undefined;
     }
 }
+// filter query function
 function filterSetter(key, value) {
     let formattedValue;
     switch (key) {
@@ -51,7 +53,7 @@ function filterSetter(key, value) {
             return {};
     }
 }
-// Create a new request
+// Create a new testimonial
 TestimonialRouter.post('/api/testimonials', authentication_1.userAuth, authentication_1.userVerified, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const author = req.userId;

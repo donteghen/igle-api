@@ -57,6 +57,7 @@ ContactRouter.post('/api/contacts', (req, res) => __awaiter(void 0, void 0, void
         res.status(201).send({ ok: true });
     }
     catch (error) {
+        console.log(error);
         if (error.name === 'ValidationError') {
             const VALIDATION_ERROR = {
                 name: 'VALIDATION_ERROR',

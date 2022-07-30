@@ -14,10 +14,6 @@ const TokenSchema = new Schema<TokenDocument>({
         type: Number,
         default: Date.now(),
     }
-}, {
-    timestamps:true,
-    toJSON: { virtuals: true },
-  toObject: { virtuals: true }
 })
 TokenSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 })
 const Token = model<TokenDocument>('Token', TokenSchema)

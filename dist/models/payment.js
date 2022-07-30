@@ -4,13 +4,18 @@ exports.Payment = void 0;
 const mongoose_1 = require("mongoose");
 const PaymentSchema = new mongoose_1.Schema({
     sender: {
-        type: String,
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     method: {
         type: String,
         required: true,
-        enum: ['MOBIL MONEY', 'WIRED TRANSFER', 'WESTERN UNION', 'OTHERS']
+        enum: ['MOBILE_MONEY', 'WIRED_TRANSFER', 'WESTERN_UNION', 'OTHERS']
+    },
+    amount: {
+        type: Number,
+        required: true,
     },
     project: {
         type: mongoose_1.Schema.Types.ObjectId,
@@ -21,6 +26,15 @@ const PaymentSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
         default: Date.now()
+    },
+    note: {
+        type: String,
+        required: true
+    },
+    refunded: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, {
     timestamps: true,

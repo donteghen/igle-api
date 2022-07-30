@@ -120,20 +120,23 @@ UserRouter.patch('/api/users/:id/verify', async (req: Request, res: Response) =>
 // User avatar upload
 UserRouter.post('/api/user/profile/avatar', userAuth, userVerified, multerUpload.single('avatar'), async (req: Request, res: Response) => {
     try {
+
         const user = await User.findById(req.userId)
         if(user.avatar){
             await cloudinary.v2.uploader.destroy(user.avatarDeleteId)
         }
         const result = await cloudinary.v2.uploader.upload(req.file.path,
             { folder: "Igle/Users/Avatars/",
-               public_id: user._id
+               public_id: req.file.originalname
             }
         );
         user.avatar = result.secure_url
         user.avatarDeleteId = result.public_id
         const updatedUser = await user.save()
+
         res.send({ok:true, data:updatedUser})
     } catch (error) {
+        console.log(error)
         res.status(400).send({ok:false, error:error?.message})
     }
 })

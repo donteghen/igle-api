@@ -1,7 +1,7 @@
 "use strict";
 ////////////////////////// ------User Related ------/////////////////////////////////
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.notifyNewtestimonialAdded = exports.notifyProjectRequestStatusChanged = exports.notifyNewProjectRequest = exports.notifyNewContactMessage = exports.notifyReportDisptached = exports.notifyProjectDeactivated = exports.notifyProjectActivated = exports.notifyProjectStatusChange = exports.notifyProjectPlanUpgraded = exports.notifyProjectDeleted = exports.notifyProjectCreated = exports.notifyAccountVerified = exports.welcomeTemplate = exports.notifyAccountCreated = exports.verifyAccountTemplate = void 0;
+exports.confirmPaymentRefund = exports.confirmPaymentReceived = exports.notifyNewtestimonialAdded = exports.notifyProjectRequestStatusChanged = exports.notifyNewProjectRequest = exports.notifyNewContactMessage = exports.notifyReportDisptached = exports.notifyProjectDeactivated = exports.notifyProjectActivated = exports.notifyProjectStatusChange = exports.notifyProjectPlanUpgraded = exports.notifyProjectDeleted = exports.notifyProjectCreated = exports.notifyAccountVerified = exports.welcomeTemplate = exports.notifyAccountCreated = exports.verifyAccountTemplate = void 0;
 exports.verifyAccountTemplate = {
     subject: 'Account verification',
     heading: 'Account Verification',
@@ -124,4 +124,23 @@ const notifyNewtestimonialAdded = () => {
     };
 };
 exports.notifyNewtestimonialAdded = notifyNewtestimonialAdded;
+/////////////////////////// ------Testimonials Related ------/////////////////////////////////
+const confirmPaymentReceived = (userName, projectName, projectPlan) => {
+    return {
+        subject: 'Project Plan Payment Confirmation',
+        heading: 'Project Plan Payment Updates',
+        detail: `Dear ${userName}<br/><br/> Thanks for your recent payment.<br/><br/>This is to confirm that your payment for the project: <strong>${projectName}</strong>, on <strong>${projectPlan} Plan</strong> has been successfully received and processed.<br/><strong>Please visit profile setting's payment page for details, thanks!</strong>.`,
+        linkText: 'Visit Your Profile Now'
+    };
+};
+exports.confirmPaymentReceived = confirmPaymentReceived;
+const confirmPaymentRefund = (userName, projectName, projectPlan) => {
+    return {
+        subject: 'Project Plan Payment Refund Confirmation',
+        heading: 'Project Plan Payment Refund Updates',
+        detail: `Dear ${userName}<br/><br/>This is to confirm that your recent payment made for the project: <strong>${projectName}</strong>, on <strong>${projectPlan} Plan</strong> has been successfully refunded.<br/><strong>Please visit profile setting's payment page for details or contact the support team if there are any issues with the refund thanks!</strong>.`,
+        linkText: 'Visit Your Profile Now'
+    };
+};
+exports.confirmPaymentRefund = confirmPaymentRefund;
 //# sourceMappingURL=email-template.js.map

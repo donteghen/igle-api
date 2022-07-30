@@ -8,6 +8,7 @@ import { notifyNewtestimonialAdded } from '../utils/constants/email-template';
 
 const TestimonialRouter = express.Router()
 
+// casting a string to boolean
 function toBoolean (stringValue: string) : boolean | undefined {
     if (stringValue === 'true') {
         return true
@@ -19,6 +20,8 @@ function toBoolean (stringValue: string) : boolean | undefined {
         return undefined
     }
 }
+
+// filter query function
 function filterSetter (key:string, value:any) {
 
     let formattedValue: number | string | boolean
@@ -39,7 +42,7 @@ function filterSetter (key:string, value:any) {
             return {}
     }
 }
-// Create a new request
+// Create a new testimonial
 TestimonialRouter.post('/api/testimonials', userAuth, userVerified,  async (req:Request, res:Response) => {
     try {
         const author = req.userId

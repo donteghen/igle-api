@@ -71,7 +71,7 @@ const UserSchema = new Schema({
         city: {
             type: String,
         },
-        adress_line: {
+        address_line: {
             type: String,
         }
     },

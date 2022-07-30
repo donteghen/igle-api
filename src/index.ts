@@ -5,6 +5,10 @@ import cors from 'cors'
 require('newrelic')
 import { connectDb } from "./config/dbconfig";
 
+const app = express();
+
+dotenv.config()
+connectDb()
 // Router import
 import { UserRouter } from "./routes/user";
 import { ProjectRouter } from "./routes/project";
@@ -12,12 +16,10 @@ import { RequestRouter } from "./routes/request";
 import { ContactRouter } from "./routes/contact";
 import { ReportRouter } from "./routes/report";
 import { TestimonialRouter } from "./routes/testimonial";
+import {PaymentRouter} from "./routes/payment"
 
 //  initial app variables and instances
-const app = express();
 
-dotenv.config()
-connectDb()
 
 const port = process.env.PORT || 8080;
 
@@ -34,6 +36,7 @@ app.use(RequestRouter)
 app.use(ContactRouter)
 app.use(ReportRouter)
 app.use(TestimonialRouter)
+app.use(PaymentRouter)
 
 app.get('/api/', (req, res) => {
     res.send('welcome the autobazar api')

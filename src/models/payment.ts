@@ -3,15 +3,19 @@ import { Schema, model } from "mongoose";
 
 const PaymentSchema = new Schema<PaymentDocument>({
     sender:{
-        type:String,
+        type: Schema.Types.ObjectId,
+        ref:'User',
         required: true
     },
     method:{
         type: String,
         required: true,
-        enum:['MOBIL MONEY', 'WIRED TRANSFER','WESTERN UNION', 'OTHERS']
+        enum:['MOBILE_MONEY', 'WIRED_TRANSFER','WESTERN_UNION', 'OTHERS']
     },
-
+    amount: {
+        type: Number,
+        required: true,
+    },
     project: {
         type: Schema.Types.ObjectId,
         ref:'Project',
@@ -21,6 +25,15 @@ const PaymentSchema = new Schema<PaymentDocument>({
         type: Number,
         required: true,
         default: Date.now()
+    },
+    note: {
+        type:String,
+        required: true
+    },
+    refunded: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, {
     timestamps:true,

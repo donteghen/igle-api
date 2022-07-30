@@ -128,7 +128,7 @@ UserRouter.post('/api/user/profile/avatar', authentication_1.userAuth, authentic
             yield cloudinary_1.cloudinary.v2.uploader.destroy(user.avatarDeleteId);
         }
         const result = yield cloudinary_1.cloudinary.v2.uploader.upload(req.file.path, { folder: "Igle/Users/Avatars/",
-            public_id: user._id
+            public_id: req.file.originalname
         });
         user.avatar = result.secure_url;
         user.avatarDeleteId = result.public_id;
@@ -136,6 +136,7 @@ UserRouter.post('/api/user/profile/avatar', authentication_1.userAuth, authentic
         res.send({ ok: true, data: updatedUser });
     }
     catch (error) {
+        console.log(error);
         res.status(400).send({ ok: false, error: error === null || error === void 0 ? void 0 : error.message });
     }
 }));

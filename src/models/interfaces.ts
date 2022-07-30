@@ -94,8 +94,11 @@ export interface TestimonialDocument extends Document {
 }
 
 export interface PaymentDocument extends Document {
-    sender:string,
+    sender:PopulatedDoc<UserDocument & Document>,
     date:number,
     method:string,
-    project: PopulatedDoc<ProjectDocument & Document>
+    project: PopulatedDoc<ProjectDocument & Document>,
+    refunded: boolean,
+    note: string,
+    amount:number
 }

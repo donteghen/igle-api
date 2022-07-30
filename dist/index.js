@@ -8,6 +8,9 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 require('newrelic');
 const dbconfig_1 = require("./config/dbconfig");
+const app = (0, express_1.default)();
+dotenv_1.default.config();
+(0, dbconfig_1.connectDb)();
 // Router import
 const user_1 = require("./routes/user");
 const project_1 = require("./routes/project");
@@ -15,10 +18,8 @@ const request_1 = require("./routes/request");
 const contact_1 = require("./routes/contact");
 const report_1 = require("./routes/report");
 const testimonial_1 = require("./routes/testimonial");
+const payment_1 = require("./routes/payment");
 //  initial app variables and instances
-const app = (0, express_1.default)();
-dotenv_1.default.config();
-(0, dbconfig_1.connectDb)();
 const port = process.env.PORT || 8080;
 // define the express app middleware
 app.use((0, cors_1.default)());
@@ -31,6 +32,7 @@ app.use(request_1.RequestRouter);
 app.use(contact_1.ContactRouter);
 app.use(report_1.ReportRouter);
 app.use(testimonial_1.TestimonialRouter);
+app.use(payment_1.PaymentRouter);
 app.get('/api/', (req, res) => {
     res.send('welcome the autobazar api');
 });

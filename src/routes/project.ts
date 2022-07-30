@@ -92,6 +92,7 @@ ProjectRouter.get('/api/user/profile/projects', userAuth, userVerified,  async(r
 // Get a single project created by the curent user
 ProjectRouter.get('/api/user/profile/projects/:id', userAuth, userVerified,  async(req: Request, res: Response) => {
     try {
+        console.log(req.params)
         const project = await Project.findOne({_id:req.params.id, owner:req.userId}).populate('owner').exec();
         if (!project) {
             let error: IError = new Error()

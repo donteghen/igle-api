@@ -73,7 +73,7 @@ const UserSchema = new mongoose_1.Schema({
         city: {
             type: String,
         },
-        adress_line: {
+        address_line: {
             type: String,
         }
     },

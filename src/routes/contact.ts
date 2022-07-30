@@ -48,6 +48,7 @@ ContactRouter.post('/api/contacts', async (req:Request, res:Response) => {
 
         res.status(201).send({ok:true})
     } catch (error) {
+        console.log(error)
         if (error.name === 'ValidationError') {
             const VALIDATION_ERROR: IError = {
                 name: 'VALIDATION_ERROR',
@@ -56,6 +57,7 @@ ContactRouter.post('/api/contacts', async (req:Request, res:Response) => {
             res.status(400).send({ok: false, error:VALIDATION_ERROR})
             return
         }
+
         res.status(400).send({ok:false, error:error?.message})
     }
 })
